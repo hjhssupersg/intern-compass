@@ -91,6 +91,7 @@ src/
 - dnd-kit 在手机上需要配置 `TouchSensor`（带 delay 或距离阈值），否则会和页面滚动冲突。
 - 单页应用不使用前端路由（用组件状态切换标签），避免部署后刷新出现 404。
 - Qoder 内置浏览器面板隐藏时，截图与坐标点击会失效（点击报成功但不生效）；用 take_snapshot + evaluate_script 脚本点击做功能验证，视觉截图先打开浏览器面板。
+- `eslint .` 会扫到 Vite 预 bundling 缓存 `.vite/deps`（浏览器首次加载页面后生成），React 产物内的 eslint-disable 注释引用未安装的规则而报错；ESLint 全局 ignores 必须含 `.vite` 与 `dist`，`.gitignore`  likewise 含 `.vite`。
 - （踩坑后在此追加）
 
 ## 9. Git 与提交约定
