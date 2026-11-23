@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scrollbar-color: theme('colors.indigo.300') theme('colors.indigo.50');
+  }
+
+  body {
+    @apply bg-slate-50 font-sans text-slate-800 antialiased;
+  }
+
+  ::selection {
+    @apply bg-indigo-600 text-white;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-indigo-50;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-indigo-300;
+    border: 2px solid theme('colors.indigo.50');
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-indigo-400;
+  }
+}
