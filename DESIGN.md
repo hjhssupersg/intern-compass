@@ -77,6 +77,7 @@
 | `lib/gap.ts` | 统计技术标签频次并对比掌握情况 | 无 |
 | `lib/date.ts` | 本地日期解析、格式化、倒计时 | 无 |
 | `lib/storage.ts` | localStorage 读写、版本、容错 | 无 |
+| `lib/seed.ts` | 示例数据工厂、首次载入编排、清空示例 | `lib/storage`、`lib/date` |
 
 - 依赖规则：`features` → `lib`；`lib` 内部不得依赖 `features` 或 React；`features` 之间不得互相引用，需共享的数据通过上层 Context 传递。
 
@@ -151,9 +152,16 @@ function saveJobs(jobs: Job[]): { ok: boolean; error?: StorageError };
 function loadSkills(): SkillState;
 function saveSkills(s: SkillState): { ok: boolean; error?: StorageError };
 function getLastLoadError(): StorageError | null; // 读取最近一次 load 的错误，读后清除；供 UI 层弹提示
+function hasSeeded(): boolean;
+function markSeeded(): { ok: boolean; error?: StorageError };
+
+// lib/seed.ts
+function ensureSeed(): { jobs: Job[]; skills: SkillState; didSeed: boolean; saveError?: StorageError };
+function removeSamples(jobs: Job[], skills: SkillState): { jobs: Job[]; skills: SkillState };
 ```
 - 统一错误类型：`StorageError = 'unavailable' | 'quota' | 'corrupted'`
 - load 系列保持"永远返回可用数据"的签名；加载失败（不可用 / 损坏）通过 `getLastLoadError` 暴露给界面层，由 UI 负责提示（2026-11-24 确认）。
+- `ensureSeed` 仅在示例保存成功后才写 `seeded` 标记，保存失败时下次打开仍有机会载入；`removeSamples` 只删 `isSample` 岗位与示例带入的技能标签。
 - 解析错误：`parse` 对无法识别的字段返回 `undefined`，不抛异常；输入为空或过短（少于 30 字符）由调用方在界面层拦截并提示。
 - `computeGap` 规则：只统计 `status !== 'closed'` 的岗位；只返回未掌握的标签；按 `jobCount` 降序，相同则按标签名排序；`jobCount >= 3` 为 high，`2` 为 medium，`1` 为 low。
 

@@ -1,12 +1,53 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { CompassLogo } from './components/CompassLogo'
+import { SampleBanner } from './components/SampleBanner'
 import { TabBar, type TabId } from './components/TabBar'
 import { BoardPage } from './features/board/BoardPage'
 import { SkillsPage } from './features/skills/SkillsPage'
 import { GapPage } from './features/gap/GapPage'
+import { ensureSeed, removeSamples } from './lib/seed'
+import { getLastLoadError, saveJobs, saveSkills } from './lib/storage'
+import type { Job, SkillState, StorageError } from './types'
+
+function storageNotice(error: StorageError | null | undefined): string | null {
+  if (error === 'corrupted') return '检测到本地数据损坏，已备份原数据并重置为空。'
+  if (error) return '当前无法保存到浏览器存储，刷新后数据会丢失。'
+  return null
+}
 
 export default function App() {
   const [tab, setTab] = useState<TabId>('board')
+  const [seed] = useState(ensureSeed)
+  const [jobs, setJobs] = useState<Job[]>(seed.jobs)
+  const [skills, setSkills] = useState<SkillState>(seed.skills)
+  const [banner, setBanner] = useState<'sample' | 'cleared' | null>(
+    seed.jobs.some((job) => job.isSample) ? 'sample' : null,
+  )
+  const [notice, setNotice] = useState<string | null>(() =>
+    storageNotice(seed.saveError ?? getLastLoadError()),
+  )
+  const snapshotRef = useRef<{ jobs: Job[]; skills: SkillState } | null>(null)
+
+  function persist(nextJobs: Job[], nextSkills: SkillState) {
+    setJobs(nextJobs)
+    setSkills(nextSkills)
+    setNotice(storageNotice(saveJobs(nextJobs).error ?? saveSkills(nextSkills).error))
+  }
+
+  function handleClear() {
+    snapshotRef.current = { jobs, skills }
+    const next = removeSamples(jobs, skills)
+    persist(next.jobs, next.skills)
+    setBanner('cleared')
+  }
+
+  function handleUndo() {
+    const snapshot = snapshotRef.current
+    if (!snapshot) return
+    snapshotRef.current = null
+    persist(snapshot.jobs, snapshot.skills)
+    setBanner('sample')
+  }
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -38,9 +79,18 @@ export default function App() {
       </div>
 
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-6">
+        {notice && (
+          <div
+            role="alert"
+            className="mb-4 rounded-xl bg-red-50 px-4 py-2.5 text-sm text-red-700 ring-1 ring-red-100"
+          >
+            {notice}
+          </div>
+        )}
+        {banner && <SampleBanner mode={banner} onClear={handleClear} onUndo={handleUndo} />}
         <div key={tab} className="animate-fade-up">
-          {tab === 'board' && <BoardPage />}
-          {tab === 'skills' && <SkillsPage />}
+          {tab === 'board' && <BoardPage jobs={jobs} />}
+          {tab === 'skills' && <SkillsPage skills={skills} />}
           {tab === 'gap' && <GapPage />}
         </div>
       </main>

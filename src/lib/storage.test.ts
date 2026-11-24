@@ -2,8 +2,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Job } from '../types'
 import {
   getLastLoadError,
+  hasSeeded,
   loadJobs,
   loadSkills,
+  markSeeded,
   saveJobs,
   saveSkills,
   STORAGE_KEYS,
@@ -171,5 +173,32 @@ describe('getLastLoadError', () => {
     loadJobs()
     expect(getLastLoadError()).toBe('unavailable')
     expect(getLastLoadError()).toBeNull()
+  })
+})
+
+describe('seeded 标记', () => {
+  it('默认未标记', () => {
+    expect(hasSeeded()).toBe(false)
+  })
+
+  it('标记后读回 true', () => {
+    expect(markSeeded()).toEqual({ ok: true })
+    expect(hasSeeded()).toBe(true)
+    expect(stub.map.get(STORAGE_KEYS.seeded)).toBe('1')
+  })
+
+  it('读取抛错时视为未标记', () => {
+    stub.getItem = () => {
+      throw new Error('SecurityError')
+    }
+    expect(hasSeeded()).toBe(false)
+  })
+
+  it('写满时标记失败返回 quota', () => {
+    stub.setItem = () => {
+      throw new DOMException('quota', 'QuotaExceededError')
+    }
+    expect(markSeeded()).toEqual({ ok: false, error: 'quota' })
+    expect(hasSeeded()).toBe(false)
   })
 })

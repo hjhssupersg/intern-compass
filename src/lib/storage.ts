@@ -3,6 +3,7 @@ import type { Job, SaveResult, SkillState, StorageError } from '../types'
 export const STORAGE_KEYS = {
   jobs: 'intern-compass:v1:jobs',
   skills: 'intern-compass:v1:skills',
+  seeded: 'intern-compass:v1:seeded',
 } as const
 
 const BACKUP_PREFIX = 'intern-compass:v1:backup:'
@@ -67,13 +68,17 @@ function isQuotaError(error: unknown): boolean {
   )
 }
 
-function save(key: string, value: Job[] | SkillState): SaveResult {
+function writeRaw(key: string, raw: string): SaveResult {
   try {
-    localStorage.setItem(key, JSON.stringify(value))
+    localStorage.setItem(key, raw)
     return { ok: true }
   } catch (error) {
     return { ok: false, error: isQuotaError(error) ? 'quota' : 'unavailable' }
   }
+}
+
+function save(key: string, value: Job[] | SkillState): SaveResult {
+  return writeRaw(key, JSON.stringify(value))
 }
 
 export function loadJobs(): Job[] {
@@ -90,4 +95,16 @@ export function loadSkills(): SkillState {
 
 export function saveSkills(skills: SkillState): SaveResult {
   return save(STORAGE_KEYS.skills, skills)
+}
+
+export function hasSeeded(): boolean {
+  try {
+    return localStorage.getItem(STORAGE_KEYS.seeded) === '1'
+  } catch {
+    return false
+  }
+}
+
+export function markSeeded(): SaveResult {
+  return writeRaw(STORAGE_KEYS.seeded, '1')
 }

@@ -1,4 +1,5 @@
 import { EmptyState } from '../../components/EmptyState'
+import type { SkillState } from '../../types'
 
 function SkillsIcon() {
   return (
@@ -9,7 +10,25 @@ function SkillsIcon() {
   )
 }
 
-export function SkillsPage() {
+export function SkillsPage({ skills }: { skills: SkillState }) {
+  if (skills.mastered.length > 0) {
+    return (
+      <section className="rounded-2xl bg-white/70 p-6 shadow-card ring-1 ring-indigo-100/80">
+        <h2 className="text-sm font-semibold text-slate-900">已掌握的技术</h2>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {skills.mastered.map((tag) => (
+            <span
+              key={tag}
+              className="rounded-full bg-indigo-50 px-3 py-1 text-sm font-medium text-indigo-600"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+        <p className="mt-4 text-xs text-slate-400">技能勾选与编辑功能即将开放，届时差距分析会据此计算。</p>
+      </section>
+    )
+  }
   return (
     <EmptyState
       icon={<SkillsIcon />}
