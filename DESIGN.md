@@ -46,7 +46,7 @@
 | 主框架 | React | 18.x |
 | 构建工具 | Vite | 5.x |
 | 样式 | Tailwind CSS | 3.4.x |
-| 拖拽 | @dnd-kit/core + @dnd-kit/sortable | 6.x |
+| 拖拽 | @dnd-kit/core + @dnd-kit/sortable + @dnd-kit/utilities | core 6.x（≥6.3）/ sortable 10.x / utilities 3.x（2026-11-24 经 npm registry 核实配套） |
 | 数据库 | 无，使用浏览器 localStorage | - |
 | 缓存 / 消息队列 / 中间件 | 无 | - |
 | 测试 | Vitest | 2.x |
@@ -108,10 +108,10 @@ interface SkillState {
 ```
 
 **存储结构（localStorage）**：
-- `internboard:v1:jobs`：`Job[]` 的 JSON，永久，用户清除浏览器数据才会丢失
-- `internboard:v1:skills`：`SkillState` 的 JSON
-- `internboard:v1:seeded`：`"1"` 表示已载入过示例数据，避免用户清空后又被重新塞入
-- 数据损坏时：将原内容备份到 `internboard:v1:backup:<时间戳>`，再重置为空并提示用户
+- `intern-compass:v1:jobs`：`Job[]` 的 JSON，永久，用户清除浏览器数据才会丢失
+- `intern-compass:v1:skills`：`SkillState` 的 JSON
+- `intern-compass:v1:seeded`：`"1"` 表示已载入过示例数据，避免用户清空后又被重新塞入
+- 数据损坏时：将原内容备份到 `intern-compass:v1:backup:<时间戳>`，再重置为空并提示用户
 
 **状态流转**：
 ```

@@ -8,7 +8,7 @@
 - 必读文档：设计见 @DESIGN.md，进度见 @PROGRESS.md
 
 ## 2. 环境与常用命令
-- 操作系统 / 终端：Windows + PowerShell。给出的命令必须能在 PowerShell 直接运行，禁止给只能在 bash 下运行的命令（如 `rm -rf`、`export`、`&&` 链式写法请改用 `;`）。
+- 操作系统 / 终端：Windows；用户手动执行用 PowerShell，给出的命令必须能在 PowerShell 直接运行，禁止给只能在 bash 下运行的命令（如 `rm -rf`、`export`、`&&` 链式写法请改用 `;`）。AI 会话内的 shell 实际是 Git Bash（2026-11-24 确认），AI 自己执行命令时按 bash 语法，不受此限。
 - 运行时与版本：Node.js 24（实际开发环境，兼容 22+；2026-11-23 确认）
 - 包管理 / 构建工具：npm + Vite
 - 以下命令均在项目根目录执行：
