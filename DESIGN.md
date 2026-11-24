@@ -150,8 +150,10 @@ function loadJobs(): Job[];
 function saveJobs(jobs: Job[]): { ok: boolean; error?: StorageError };
 function loadSkills(): SkillState;
 function saveSkills(s: SkillState): { ok: boolean; error?: StorageError };
+function getLastLoadError(): StorageError | null; // 读取最近一次 load 的错误，读后清除；供 UI 层弹提示
 ```
 - 统一错误类型：`StorageError = 'unavailable' | 'quota' | 'corrupted'`
+- load 系列保持"永远返回可用数据"的签名；加载失败（不可用 / 损坏）通过 `getLastLoadError` 暴露给界面层，由 UI 负责提示（2026-11-24 确认）。
 - 解析错误：`parse` 对无法识别的字段返回 `undefined`，不抛异常；输入为空或过短（少于 30 字符）由调用方在界面层拦截并提示。
 - `computeGap` 规则：只统计 `status !== 'closed'` 的岗位；只返回未掌握的标签；按 `jobCount` 降序，相同则按标签名排序；`jobCount >= 3` 为 high，`2` 为 medium，`1` 为 low。
 

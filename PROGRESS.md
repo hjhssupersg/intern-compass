@@ -1,8 +1,8 @@
 # PROGRESS.md
 
 ## 1. 当前状态
-- 当前里程碑：M1 骨架与部署（进行中，M1-1 已完成）
-- 整体进度：约 15%，工具链与三标签页骨架就绪，尚无业务逻辑
+- 当前里程碑：M1 骨架与部署（进行中，M1-1、M1-2 已完成）
+- 整体进度：约 20%，工具链、三标签页骨架、存储封装就绪，尚无界面业务逻辑
 - 项目当前能否运行：能（本地 `npm run dev`，尚未部署）
 - 最后更新：2026-11-24
 
@@ -15,18 +15,22 @@
 - [ ] M6 作品帖素材
 
 ## 3. 当前任务
-- 任务：M1-2 实现 `lib/storage.ts`（loadJobs/saveJobs/loadSkills/saveSkills，try/catch、损坏数据备份、`StorageError`）及单元测试；同时去掉 test 脚本中的 `--passWithNoTests`
-- 涉及模块 / 文件：`src/lib/storage.ts`、`src/lib/storage.test.ts`、`src/types.ts`（`StorageError` 类型）
-- 完成标志：测试覆盖正常读写、localStorage 不可用、写满、损坏 JSON 的备份与重置；`npm run test`、`npm run lint`、`npm run build` 通过
+- 任务：M1-3 实现 `lib/seed.ts` 示例数据（5～6 条岗位 + 若干已掌握技能），首次打开自动载入（`intern-compass:v1:seeded` 标记），并显示"清空示例"提示条
+- 涉及模块 / 文件：`src/lib/seed.ts`、`src/App.tsx`（加载与提示条接线）、可能涉及 `src/components/`
+- 完成标志：首次打开自动出现示例岗位与技能；清空后刷新不再重新载入；存储失败时按 `getLastLoadError` / SaveResult 给用户可见提示；test / lint / build 通过，浏览器实测
 - 当前卡点：无
 
 ## 4. 下一步
-1. M1-2：存储封装与单元测试（见上）
-2. M1-3：实现 `lib/seed.ts` 示例数据（5～6 条岗位 + 若干已掌握技能），首次打开自动载入，并显示"清空示例"提示条
-3. M1-4：先部署一次到 Qoder Sites，验证构建命令、产物目录、localStorage 是否可用，把结论写入第 7 节和 DESIGN.md 第 14 节
-4. M2：看板（以上全部完成后再开始；dnd-kit 配套版本已核实并写入 DESIGN §4：core ≥6.3 / sortable 10.x / utilities 3.x）
+1. M1-3：示例数据与首次载入（见上）
+2. M1-4：先部署一次到 Qoder Sites，验证构建命令、产物目录、localStorage 是否可用，把结论写入第 7 节和 DESIGN.md 第 14 节
+3. M2：看板（以上全部完成后再开始；dnd-kit 配套版本已核实并写入 DESIGN §4：core ≥6.3 / sortable 10.x / utilities 3.x）
 
 ## 5. 已完成记录
+- 2026-11-24 M1-2 存储封装与单元测试（feat/m1-storage）：
+  - `src/lib/storage.ts`：loadJobs/saveJobs/loadSkills/saveSkills，key 前缀 `intern-compass:v1:`；损坏数据备份到 `backup:<时间戳>` 后重置；quota 按 DOMException name 区分（含 Firefox 变体）
+  - 新增 `getLastLoadError()`（读后清除）解决 load 签名无错误出口的问题，DESIGN §8 已同步；`StorageError`、`SaveResult` 落在 types.ts
+  - 13 个单元测试覆盖正常读写、不可用、写满、损坏 JSON/结构错误、备份失败仍重置；未引入 jsdom，用 Map stub 模拟 localStorage
+  - test 脚本移除 `--passWithNoTests`；test / lint / build 全过；无 UI 改动，未做浏览器验证
 - 2026-11-23 M1-1 项目初始化与三标签页骨架：
   - Vite 5.4 + React 18.3 + TS 5.6 + Tailwind 3.4 + Vitest 2.1 + ESLint 9，按 DESIGN §4 锁主版本；dnd-kit 未安装（M2 再加）
   - `src/types.ts` 落地 §7 数据模型与状态常量；`App.tsx` 状态切换标签（无路由）；三个空状态页面 + TabBar / EmptyState / CompassLogo 组件
@@ -39,7 +43,7 @@
 ## 6. 遗留问题与技术债
 | 问题 | 影响 | 计划处理时间 / 里程碑 |
 |---|---|---|
-| test 脚本含 `--passWithNoTests`（当前无测试文件） | 无测试时也显示通过 | M1-2 有真实测试后移除 |
+| 无 | - | - |
 
 ## 7. 待我决策的问题
 - Qoder Sites 是否支持后端函数 / 调用大模型？（M1-4 部署验证后决定是否做大模型解析，在此之前一律按纯前端开发）

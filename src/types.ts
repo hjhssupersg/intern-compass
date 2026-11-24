@@ -30,3 +30,10 @@ export interface Job {
 export interface SkillState {
   mastered: string[]
 }
+
+export type StorageError = 'unavailable' | 'quota' | 'corrupted'
+
+export interface SaveResult {
+  ok: boolean
+  error?: StorageError
+}
