@@ -1,8 +1,8 @@
 # PROGRESS.md
 
 ## 1. 当前状态
-- 当前里程碑：M1 骨架与部署（进行中，M1-1、M1-2 已完成）
-- 整体进度：约 20%，工具链、三标签页骨架、存储封装就绪，尚无界面业务逻辑
+- 当前里程碑：M1 骨架与部署（进行中，M1-1、M1-2、M1-3 已完成）
+- 整体进度：约 30%，骨架、存储、示例数据与首开体验就绪，剩部署验证
 - 项目当前能否运行：能（本地 `npm run dev`，尚未部署）
 - 最后更新：2026-11-24
 
@@ -15,17 +15,21 @@
 - [ ] M6 作品帖素材
 
 ## 3. 当前任务
-- 任务：M1-3 实现 `lib/seed.ts` 示例数据（5～6 条岗位 + 若干已掌握技能），首次打开自动载入（`intern-compass:v1:seeded` 标记），并显示"清空示例"提示条
-- 涉及模块 / 文件：`src/lib/seed.ts`、`src/App.tsx`（加载与提示条接线）、可能涉及 `src/components/`
-- 完成标志：首次打开自动出现示例岗位与技能；清空后刷新不再重新载入；存储失败时按 `getLastLoadError` / SaveResult 给用户可见提示；test / lint / build 通过，浏览器实测
+- 任务：M1-4 首次部署到 Qoder Sites，验证构建命令、产物目录、单页刷新行为、localStorage 在站点域名下是否可用
+- 涉及模块 / 文件：部署配置（按 Qoder Sites 要求）、DESIGN §14 与本文第 7 节记录结论
+- 完成标志：公网链接可访问，三标签可切换，示例数据显示正常；手机与电脑各打开一次验证
 - 当前卡点：无
 
 ## 4. 下一步
-1. M1-3：示例数据与首次载入（见上）
-2. M1-4：先部署一次到 Qoder Sites，验证构建命令、产物目录、localStorage 是否可用，把结论写入第 7 节和 DESIGN.md 第 14 节
-3. M2：看板（以上全部完成后再开始；dnd-kit 配套版本已核实并写入 DESIGN §4：core ≥6.3 / sortable 10.x / utilities 3.x）
+1. M1-4：部署验证（见上）
+2. M2：看板（M1 全部完成后再开始；dnd-kit 配套版本已核实并写入 DESIGN §4：core ≥6.3 / sortable 10.x / utilities 3.x）
 
 ## 5. 已完成记录
+- 2026-11-24 M1-3 示例数据与首次载入（feat/m1-seed）：
+  - `lib/date.ts`（todayLocal/addDays/daysUntil，本地时区）+ 11 个单测；`lib/seed.ts` 6 条示例覆盖 6 状态、截止日相对今天生成；`ensureSeed` 保存成功才写 seeded 标记
+  - storage 增加 `hasSeeded/markSeeded`；UI：JobCard 只读卡片（≤3 天/过期标红、closed 灰）、SampleBanner 清空/撤销两态、App 存储失败红色提示条
+  - 35 个单测全过；浏览器实测：首开 6 卡片+提示条、技能页 3 标签、清空→撤销→再清空→刷新不重塞、375px 无溢出、控制台无报错
+  - 踩坑：遗留 dev server 占 5173 致 HMR 混合模块假 bug，换 5174 复测通过（已入 AGENTS §8）
 - 2026-11-24 M1-2 存储封装与单元测试（feat/m1-storage）：
   - `src/lib/storage.ts`：loadJobs/saveJobs/loadSkills/saveSkills，key 前缀 `intern-compass:v1:`；损坏数据备份到 `backup:<时间戳>` 后重置；quota 按 DOMException name 区分（含 Firefox 变体）
   - 新增 `getLastLoadError()`（读后清除）解决 load 签名无错误出口的问题，DESIGN §8 已同步；`StorageError`、`SaveResult` 落在 types.ts
@@ -54,6 +58,7 @@
 ## 8. 踩坑记录
 - 2026-11-23：Qoder 内置浏览器面板隐藏时，截图报 NATIVE_BROWSER_VIEWPORT_UNAVAILABLE、坐标点击"成功"但不生效；take_snapshot 与 evaluate_script 脚本点击仍可用。功能验证改用脚本点击，视觉截图需先打开浏览器面板。（已同步 AGENTS.md 第 8 节）
 - 2026-11-23：跑过 dev 并打开页面后 `npm run lint` 报错：ESLint 9 扫到项目根 `.vite/deps` 预 bundling 缓存，React 产物内 eslint-disable 注释引用未安装的 react-internal 规则。全局 ignores 加 `**/.vite`，`.gitignore` 加 `.vite` 后恢复。（已同步 AGENTS.md 第 8 节）
+- 2026-11-24：上一会话遗留 dev server 占用 5173，新 server 换到 5174；浏览器连旧端口拿到 HMR 混合新旧模块的页面，表现为标签点击不生效、SkillsPage 收到新 props 却渲染旧逻辑。用 React fiber 读 memoizedProps 定位后换端口复测通过。（已同步 AGENTS.md 第 8 节）
 
 ## 9. 重要变更记录
 - 2026-11-22：初始版本，三份文档按模板重写。
@@ -78,6 +83,14 @@
 - 效果 / 截图文件名：
 - 遇到的问题与怎么让 Qoder 解决的：
 ```
+### 2026-11-24 / M1-2（M1 进行中）
+- 给 Qoder 的关键 prompt："确认 getLastLoadError 方案，开始执行"（先给四要素方案：文件清单、设计决策与备选、验证与提交）
+- 效果 / 截图文件名：13 个存储单测全过、无新依赖；终端测试输出截图由用户提供
+- 遇到的问题与怎么让 Qoder 解决的：① load 签名无错误出口 → 新增 getLastLoadError 读后清除并同步 DESIGN §8；② 测试输出里的预期 console.warn 被误认为报错 → 解释为故意失败场景的设计内提示
+### 2026-11-24 / M1-3（M1 进行中）
+- 给 Qoder 的关键 prompt："按 1 完成什么 2 文件清单 3 思路与备选 4 验证与提交 四段给方案，确认后开工"
+- 效果 / 截图文件名：首开 6 卡片+示例提示条、清空/撤销、刷新不重塞、375px 通过（视觉截图待补：用脚本验证，未截成图）
+- 遇到的问题与怎么让 Qoder 解决的：遗留 dev server 占端口导致 HMR 混合模块假 bug → 读 vite 输出发现 5174、用 fiber props 取证后换端口复测，坑入 AGENTS §8
 ### 2026-11-23 / M1-1（M1 进行中）
 - 给 Qoder 的关键 prompt："先读三份文档，复述当前状态和下一步，不清楚的先问；确认后本次只做 M1-1：Vite + React + TS + Tailwind 初始化 + 三标签空状态骨架"
 - 效果 / 截图文件名：三标签骨架可运行、靛蓝视觉壳完成（视觉截图待补：当时内置浏览器面板隐藏，未截成图）
