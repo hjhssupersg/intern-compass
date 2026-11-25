@@ -233,7 +233,7 @@ function removeSamples(jobs: Job[], skills: SkillState): { jobs: Job[]; skills: 
 | M6 作品帖素材 | 整理截图、prompt 记录、5 步流程、发帖 | 作品帖草稿完成，包含 Qoder 账号与公网链接 |
 
 ## 14. 风险与待决问题
-- 【已确认 2026-11-25】Qoder Sites 支持服务端 Function、数据库与 Secret（密钥放服务端），具备安全调用大模型的条件。**是否做大模型解析仍待用户决策**，在决策前一律按纯前端方案开发。
+- 【已确认 2026-11-25】Qoder Sites 支持服务端 Function、数据库与 Secret（密钥放服务端），具备安全调用大模型的条件。**用户已决策采用大模型解析（2026-11-25）**；实现路径（自带 key 的 Function vs Qoder Cloud Agents）、降级策略与排期在 M3 方案中确认后同步 §10。
 - 【已确认 2026-11-25】Qoder Sites 不代跑构建：本地 `npm run build` 后将 `dist/` 作为产物目录上传（`prepare_site` 的 `webDirectory: "dist"`）；开启 `spa: true` 后刷新回退到 index.html，公网实测刷新不 404。
 - 【已确认 2026-11-25】localStorage 在站点域名（*.qoder.zone）下读写正常：示例载入、清空、刷新不重塞均公网实测通过。
 - 【已确认】产品正式名称为"实习罗盘"，主色为靛蓝（2026-11-23 确认）。
