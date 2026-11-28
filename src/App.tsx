@@ -6,8 +6,9 @@ import { BoardPage } from './features/board/BoardPage'
 import { SkillsPage } from './features/skills/SkillsPage'
 import { GapPage } from './features/gap/GapPage'
 import { ensureSeed, removeSamples } from './lib/seed'
+import { moveJobStatus } from './lib/board'
 import { getLastLoadError, saveJobs, saveSkills } from './lib/storage'
-import type { InterviewStage, Job, SkillState, StorageError } from './types'
+import type { InterviewStage, Job, SkillState, Status, StorageError } from './types'
 
 function storageNotice(error: StorageError | null | undefined): string | null {
   if (error === 'corrupted') return '检测到本地数据损坏，已备份原数据并重置为空。'
@@ -56,6 +57,10 @@ export default function App() {
     )
   }
 
+  function handleStatusChange(jobId: string, status: Status) {
+    persist(moveJobStatus(jobs, jobId, status), skills)
+  }
+
   return (
     <div className="flex min-h-screen flex-col">
       <div
@@ -98,7 +103,9 @@ export default function App() {
           {banner && <SampleBanner mode={banner} onClear={handleClear} onUndo={handleUndo} />}
         </div>
         <div key={tab} className={`animate-fade-up ${tab === 'board' ? '' : 'mx-auto max-w-6xl'}`}>
-          {tab === 'board' && <BoardPage jobs={jobs} onStageChange={handleStageChange} />}
+          {tab === 'board' && (
+            <BoardPage jobs={jobs} onStageChange={handleStageChange} onStatusChange={handleStatusChange} />
+          )}
           {tab === 'skills' && <SkillsPage skills={skills} />}
           {tab === 'gap' && <GapPage />}
         </div>

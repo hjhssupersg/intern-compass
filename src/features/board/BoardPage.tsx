@@ -1,9 +1,21 @@
 import { useState } from 'react'
+import {
+  DndContext,
+  DragOverlay,
+  PointerSensor,
+  TouchSensor,
+  pointerWithin,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+  type DragStartEvent,
+} from '@dnd-kit/core'
 import { EmptyState } from '../../components/EmptyState'
 import type { InterviewStage, Job, Status } from '../../types'
 import { STATUS_LABELS, STATUS_ORDER } from '../../types'
 import { BoardColumn } from './BoardColumn'
-import { CHIP_ACTIVE_STYLES, CHIP_IDLE_STYLES } from './columnStyles'
+import { JobCard } from './JobCard'
+import { StatusChip } from './StatusChip'
 
 function BoardIcon() {
   return (
@@ -18,13 +30,31 @@ function BoardIcon() {
 export function BoardPage({
   jobs,
   onStageChange,
+  onStatusChange,
 }: {
   jobs: Job[]
   onStageChange: (jobId: string, stage: InterviewStage) => void
+  onStatusChange: (jobId: string, status: Status) => void
 }) {
   const [mobileStatus, setMobileStatus] = useState<Status>(
     () => STATUS_ORDER.find((status) => jobs.some((job) => job.status === status)) ?? 'todo',
   )
+  const [activeJob, setActiveJob] = useState<Job | null>(null)
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 8 } }),
+  )
+
+  function handleDragStart(event: DragStartEvent) {
+    setActiveJob(jobs.find((job) => job.id === event.active.id) ?? null)
+  }
+
+  function handleDragEnd(event: DragEndEvent) {
+    setActiveJob(null)
+    const target = event.over?.data.current?.status as Status | undefined
+    const job = jobs.find((item) => item.id === event.active.id)
+    if (target && job && job.status !== target) onStatusChange(job.id, target)
+  }
 
   if (jobs.length === 0) {
     return (
@@ -62,41 +92,49 @@ export function BoardPage({
   }
 
   return (
-    <section>
-      <p className="mb-4 text-sm text-slate-500">共 {jobs.length} 个岗位 · 拖拽改状态即将开放</p>
-      <div className="mb-3 flex flex-wrap gap-1.5 md:hidden">
-        {STATUS_ORDER.map((status) => {
-          const count = jobs.filter((job) => job.status === status).length
-          const active = mobileStatus === status
-          return (
-            <button
+    <DndContext
+      sensors={sensors}
+      collisionDetection={pointerWithin}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      onDragCancel={() => setActiveJob(null)}
+    >
+      <section>
+        <p className="mb-2 text-sm text-slate-500">共 {jobs.length} 个岗位 · 拖动卡片到目标列改状态</p>
+        <p className="mb-2 text-xs text-slate-400 md:hidden">长按卡片拖到下方状态标签即可改状态</p>
+        <div className="mb-3 flex flex-wrap gap-1.5 md:hidden">
+          {STATUS_ORDER.map((status) => (
+            <StatusChip
               key={status}
-              type="button"
-              aria-pressed={active}
-              onClick={() => setMobileStatus(status)}
-              className={`min-h-[40px] rounded-full px-3 text-xs font-semibold transition ${
-                active ? CHIP_ACTIVE_STYLES[status] : CHIP_IDLE_STYLES[status]
-              }`}
-            >
-              {STATUS_LABELS[status]} {count}
-            </button>
-          )
-        })}
-      </div>
-      <div className="md:flex md:items-stretch md:gap-3 md:overflow-x-auto md:pb-3 xl:grid xl:grid-cols-6 xl:overflow-visible">
-        {STATUS_ORDER.map((status) => (
-          <div
-            key={status}
-            className={`${mobileStatus === status ? '' : 'hidden'} md:block md:w-60 md:shrink-0 xl:w-auto`}
-          >
-            <BoardColumn
               status={status}
-              jobs={jobs.filter((job) => job.status === status)}
-              onStageChange={onStageChange}
+              count={jobs.filter((job) => job.status === status).length}
+              active={mobileStatus === status}
+              onSelect={setMobileStatus}
             />
+          ))}
+        </div>
+        <div className="md:flex md:items-stretch md:gap-3 md:overflow-x-auto md:pb-3 xl:grid xl:grid-cols-6 xl:overflow-visible">
+          {STATUS_ORDER.map((status) => (
+            <div
+              key={status}
+              className={`${mobileStatus === status ? '' : 'hidden'} md:block md:w-60 md:shrink-0 xl:w-auto`}
+            >
+              <BoardColumn
+                status={status}
+                jobs={jobs.filter((job) => job.status === status)}
+                onStageChange={onStageChange}
+              />
+            </div>
+          ))}
+        </div>
+      </section>
+      <DragOverlay>
+        {activeJob && (
+          <div className="rotate-2 drop-shadow-xl">
+            <JobCard job={activeJob} onStageChange={() => undefined} />
           </div>
-        ))}
-      </div>
-    </section>
+        )}
+      </DragOverlay>
+    </DndContext>
   )
 }
