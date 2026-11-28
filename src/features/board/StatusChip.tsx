@@ -22,7 +22,7 @@ export function StatusChip({
       type="button"
       aria-pressed={active}
       onClick={() => onSelect(status)}
-      className={`min-h-[40px] shrink-0 whitespace-nowrap rounded-full px-1.5 text-xs font-semibold transition ${
+      className={`min-h-[40px] shrink-0 whitespace-nowrap rounded-full px-1 text-xs font-semibold transition ${
         active ? CHIP_ACTIVE_STYLES[status] : CHIP_IDLE_STYLES[status]
       } ${isOver ? DROP_OVER_STYLE : ''}`}
     >

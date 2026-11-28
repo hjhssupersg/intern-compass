@@ -41,8 +41,8 @@ export function BoardPage({
   )
   const [activeJob, setActiveJob] = useState<Job | null>(null)
   const sensors = useSensors(
-    // MouseSensor 只响应鼠标；若用 PointerSensor 会与 TouchSensor 在触摸时双重激活
-    useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
+    // 鼠标与触摸统一长按 200ms 触发（2026-11-28 用户确认）；tolerance 允许按住时轻微手抖
+    useSensor(MouseSensor, { activationConstraint: { delay: 200, tolerance: 8 } }),
     useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 8 } }),
   )
 
@@ -105,9 +105,9 @@ export function BoardPage({
       onDragCancel={() => setActiveJob(null)}
     >
       <section>
-        <p className="mb-2 text-sm text-slate-500">共 {jobs.length} 个岗位 · 拖动卡片到目标列改状态</p>
-        <p className="mb-2 text-xs text-slate-400 md:hidden">长按卡片拖到下方状态标签即可改状态</p>
-        <div className="mb-3 flex gap-1 overflow-x-auto md:hidden">
+        <p className="mb-2 text-sm text-slate-500">共 {jobs.length} 个岗位 · 长按卡片拖到目标列改状态</p>
+        <p className="mb-3 text-xs text-slate-400 md:hidden">长按卡片拖到下方状态标签即可改状态</p>
+        <div className="mb-4 flex gap-2.5 overflow-x-auto md:hidden">
           {STATUS_ORDER.map((status) => (
             <StatusChip
               key={status}
