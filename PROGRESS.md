@@ -1,8 +1,8 @@
 # PROGRESS.md
 
 ## 1. 当前状态
-- 当前里程碑：M2 完成（2026-11-28 M2-2 用户验收通过并合并 main）；下一步部署到 Qoder Sites 公网复验，然后 M3
-- 整体进度：约 55%，已上线公开访问（线上仍为 M1 版本，M2 尚未部署）
+- 当前里程碑：M2 完成并已部署公网（2026-11-28 复验通过）；下一步 M3 JD 录入与解析
+- 整体进度：约 55%，线上已为 M2 看板版本（公网复验通过）
 - 项目当前能否运行：能；公网链接 https://intern-compass-aqhthz2hyy7.qoder.zone（公开访问）
 - 最后更新：2026-11-28
 
@@ -15,16 +15,19 @@
 - [ ] M6 作品帖素材
 
 ## 3. 当前任务
-- 任务：M2 已完成，无进行中开发任务；下一步推送远端 + 重新部署到 Qoder Sites 并公网复验看板
-- 涉及模块 / 文件：部署相关（本地 build 产物 dist、Qoder Sites 站点 intern-compass）
-- 完成标志：公网看板拖拽/长按改状态、刷新持久化、3 天标红、手机单列与 chips 单行复验通过
-- 当前卡点：等用户确认推送与部署
+- 任务：M2 部署与公网复验完成；下一步 M3 开工（先小实验定大模型解析实现路径）
+- 涉及模块 / 文件：M3 预计 features/jd-input、lib/parser、服务端 Function（路径待实验）
+- 完成标志：M3 见 DESIGN §13——示例 JD 正确解析入库、异常分支有提示、解析有单测
+- 当前卡点：无；M3 实现路径待小实验后提请确认
 
 ## 4. 下一步
-1. 推送 main 到远端；重新 build 并部署到 Qoder Sites，公网复验看板（桌面长按拖拽、手机长按拖到 chips、标红、持久化、chips 单行）
-2. M3：JD 录入与解析——用户已决策采用大模型解析（2026-11-25）；实现路径（Function+自带 key vs Qoder Cloud Agents）待 M3 开工时先做小实验验证延迟/成本/套餐支持再定；保留关键词词典作降级
+1. M3：JD 录入与解析——用户已决策采用大模型解析（2026-11-25）；实现路径（Function+自带 key vs Qoder Cloud Agents）待 M3 开工时先做小实验验证延迟/成本/套餐支持再定；保留关键词词典作降级
+2. M3 完成后按里程碑推进 M4 技能与差距分析
 
 ## 5. 已完成记录
+- 2026-11-28 M2 部署公网（main 推送 434b6f4..9848d16 后 prepare/publish，action b1c32df4）：
+  - 本地 build 后上传 dist（spa: true），发布成功 published: true，地址不变 https://intern-compass-aqhthz2hyy7.qoder.zone（公开）
+  - 公网复验：1440px 6 列、长按 220ms 激活、立即移动不拖、落列 applied 刷新仍在、≤3 天标红在；375px chips 6 个单行不滚动、无溢出、滑动不拖、长按 216ms 拖到已结束 chip 高亮落列、视图自动切换、刷新持久化；控制台无报错
 - 2026-11-28 M2-2 拖拽改状态 + 持久化（feat/m2-board-dnd，**用户验收通过，已合并 main；M2 完成**）：
   - 方案 A（用户确认）：core droppable 模型，不装 sortable——列与手机 chips 为放置区（data.status）、pointerWithin 碰撞、DragOverlay 跟手浮层；lib/board.ts moveJobStatus + 5 单测（全量 40）
   - 修订链（用户反馈驱动）：① 列高随内容（items-start、去 h-full）；② PointerSensor+TouchSensor 触摸双重激活 → MouseSensor+TouchSensor；③ 落列后手机视图自动切到目标状态（卡片不再"消失"）；④ chips 单行 + 间距留白（ring-2 外描边吃 gap，按视觉净空 6px 重算）；⑤ 用户满意手机长按 0.2s，电脑端统一 MouseSensor delay 200 / tolerance 8
@@ -97,6 +100,7 @@
 - 2026-11-28：M2-1 过早合并被回退（main 回到 877a2d1，改动保留 feat/m2-board-static）；AGENTS §9 写明合并回 main 前须用户确认效果。
 - 2026-11-28：M2-1 修订（醒目配色/面试轮次细分/手机单列总览/chips 醒目化）用户验收通过，合并回 main。
 - 2026-11-28：M2-2 用户验收通过合并回 main（5bb98de），M2 勾选完成；拖拽统一长按 200ms 触发（用户确认手感）。
+- 2026-11-28：M2 部署公网并复验通过（用户授权推送+部署）；线上升级为 M2 看板版本。
 
 ## 10. 下次会话的开场提示词
 ```
