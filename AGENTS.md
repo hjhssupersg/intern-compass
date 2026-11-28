@@ -101,6 +101,7 @@ src/
 - navigate_page 的 initScript 只作用顶层 frame；iframe 内解除定时器节流需在 load 后向 contentWindow 注入 shim（delay 定时器在 touchstart 时才创建，load 后注入来得及）。（2026-11-28 踩坑）
 - Chrome DevTools 设备模式（选手机型号）把鼠标事件转成触摸事件且不显示 CSS 光标：MouseSensor 不激活、无 grab 图标、必须长按 200ms 才能拖；响应式窄窗模式才是真鼠标逻辑（立即可拖、有 grab 图标）。验收时"拖拽时好时坏"多因两种模式切换，先确认模式再判 bug。（2026-11-28 踩坑）
 - 隐藏环境验证脚本等待必须按真实时间（Date.now 循环 + MessageChannel tick），固定 tick 轮数的实际耗时可能不足 200ms，长按定时器未触发就结束脚本会误判"拖拽失效"；同源 iframe 共享 localStorage，跨轮测试需要先重置 intern-compass 键再 reload，否则读到上一轮残留状态。（2026-11-28 踩坑）
+- Tailwind ring 画在 border-box 外、会吃掉 flex gap：两侧 ring-2 时视觉净空 = gap - 4px；调 chips 间距要按视觉净空算（gap-2.5 净空约 6px），只看 gap 数值会误判"紧贴"。（2026-11-28 踩坑）
 - （踩坑后在此追加）
 
 ## 9. Git 与提交约定
