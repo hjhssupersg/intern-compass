@@ -78,17 +78,19 @@ export default function App() {
         <TabBar active={tab} onChange={setTab} />
       </div>
 
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-6">
-        {notice && (
-          <div
-            role="alert"
-            className="mb-4 rounded-xl bg-red-50 px-4 py-2.5 text-sm text-red-700 ring-1 ring-red-100"
-          >
-            {notice}
-          </div>
-        )}
-        {banner && <SampleBanner mode={banner} onClear={handleClear} onUndo={handleUndo} />}
-        <div key={tab} className="animate-fade-up">
+      <main className="mx-auto w-full flex-1 px-4 py-6 sm:px-6">
+        <div className="mx-auto max-w-6xl">
+          {notice && (
+            <div
+              role="alert"
+              className="mb-4 rounded-xl bg-red-50 px-4 py-2.5 text-sm text-red-700 ring-1 ring-red-100"
+            >
+              {notice}
+            </div>
+          )}
+          {banner && <SampleBanner mode={banner} onClear={handleClear} onUndo={handleUndo} />}
+        </div>
+        <div key={tab} className={`animate-fade-up ${tab === 'board' ? '' : 'mx-auto max-w-6xl'}`}>
           {tab === 'board' && <BoardPage jobs={jobs} />}
           {tab === 'skills' && <SkillsPage skills={skills} />}
           {tab === 'gap' && <GapPage />}

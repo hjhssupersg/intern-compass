@@ -1,7 +1,7 @@
 import { EmptyState } from '../../components/EmptyState'
 import type { Job } from '../../types'
 import { STATUS_LABELS, STATUS_ORDER } from '../../types'
-import { JobCard } from './JobCard'
+import { BoardColumn } from './BoardColumn'
 
 function BoardIcon() {
   return (
@@ -17,12 +17,14 @@ export function BoardPage({ jobs }: { jobs: Job[] }) {
   if (jobs.length > 0) {
     return (
       <section>
-        <p className="mb-4 text-sm text-slate-500">
-          共 {jobs.length} 个岗位 · 拖拽改状态的完整看板即将开放
-        </p>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {jobs.map((job) => (
-            <JobCard key={job.id} job={job} />
+        <p className="mb-4 text-sm text-slate-500">共 {jobs.length} 个岗位 · 拖拽改状态即将开放</p>
+        <div className="flex items-stretch gap-3 overflow-x-auto pb-3 xl:grid xl:grid-cols-6 xl:overflow-visible">
+          {STATUS_ORDER.map((status) => (
+            <BoardColumn
+              key={status}
+              status={status}
+              jobs={jobs.filter((job) => job.status === status)}
+            />
           ))}
         </div>
       </section>
