@@ -46,7 +46,7 @@ src/
 - 命名：组件文件 PascalCase（`JobCard.tsx`）；函数与变量 camelCase；常量 UPPER_SNAKE_CASE；类型与接口 PascalCase。
 - 分层与职责：组件只负责展示和交互；解析、统计、日期、存储逻辑必须放 `lib/` 的纯函数中，便于单元测试；组件不得直接读写 localStorage，必须经过 `lib/storage.ts`。
 - 类型：TypeScript 严格模式，禁止 `any`；数据结构只在 `types.ts` 定义，别处引用。
-- 文件大小：单个文件不超过 200 行，超过就拆分。
+- 文件大小：单个业务文件不超过 200 行，超过就拆分；测试文件（`*.test.ts`）豁免行数限制，仍按一个模块一个测试文件组织（2026-11-28 确认）。
 - 错误处理：不得吞异常；解析失败、存储失败要有用户可见的提示，不能只写 `console.log`。
 - 日志：开发期可用 `console.warn/error`，提交前不得留下调试用的 `console.log`。
 - 常量与魔法值：状态列表、存储 key、技术标签词典统一放 `types.ts` / `lib/` 中的常量文件，不得在组件里写死字符串。
