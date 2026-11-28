@@ -46,7 +46,7 @@
 | 主框架 | React | 18.x |
 | 构建工具 | Vite | 5.x |
 | 样式 | Tailwind CSS | 3.4.x |
-| 拖拽 | @dnd-kit/core + @dnd-kit/sortable + @dnd-kit/utilities | core 6.x（≥6.3）/ sortable 10.x / utilities 3.x（2026-11-24 经 npm registry 核实配套） |
+| 拖拽 | @dnd-kit/core + @dnd-kit/utilities | core 6.x（≥6.3）/ utilities 3.x（2026-11-28 确认：只改状态、不做列内排序，故不引入 sortable） |
 | 数据库 | 无，使用浏览器 localStorage | - |
 | 缓存 / 消息队列 / 中间件 | 无 | - |
 | 测试 | Vitest | 2.x |
@@ -183,11 +183,13 @@ function removeSamples(jobs: Job[], skills: SkillState): { jobs: Job[]; skills: 
 - 存储失败（不可用 / 写满）：卡片保留在内存中，顶部显示"当前无法保存，刷新后数据会丢失"。
 
 **主链路 B：看板拖拽改状态**
-1. 用户拖动卡片到另一列。
+1. 用户拖动卡片到另一列（手机 <768px 单列视图下为长按卡片拖到状态 chips）。
 2. 更新该 `Job.status`，写入存储。
 3. 若拖入 `closed` 列，卡片变灰；截止倒计时不再标红。
 
 异常分支：拖拽到列外则回弹原位；存储失败时同上提示。
+
+拖拽实现（2026-11-28 确认）：core droppable 模型——列与手机 chips 为放置区（`data.status` 标识），卡片 `useDraggable`，`DragOverlay` 跟手浮层，`pointerWithin` 碰撞；PointerSensor 距离阈值 8px 防点击误拖，TouchSensor delay 200ms / tolerance 8px 长按触发且不与滚动冲突；离开面试列保留 `interviewStage`。键盘拖拽留待 M5 可访问性处理。
 
 **面试轮次细分**：面试列卡片提供［一面］［二面］［HR面］三个切换按钮，点击更新 `interviewStage` 并立即持久化；其他列不显示该组按钮，字段值保留（2026-11-28 确认）。
 
@@ -251,6 +253,7 @@ function removeSamples(jobs: Job[], skills: SkillState): { jobs: Job[]; skills: 
 - 字体：系统字体栈，中文可读性优先。
 - 组件：自行用 Tailwind 实现，不引入组件库。
 - 布局：顶部为标签栏和右上角固定的"＋ 粘贴 JD"主按钮；看板 ≥1280px 时 6 列并排（近全宽），768–1279px 横向滑动（固定列宽 240px），<768px 为状态 chips 总览（带数量、换行排布）+ 单列全宽，无横滑（2026-11-28 确认断点与手机模式）。
+- 拖拽反馈：悬停放置目标（列或手机 chip）加 2px 靛蓝 outline 高亮；拖拽中原位卡片半透明、浮层微旋转+投影；拖到列外回弹（2026-11-28 确认）。
 - 空状态：每个页面必须有引导文案（如看板为空提示"粘贴你的第一条 JD"）。
 - 反馈：所有操作有即时反馈；删除类操作提供撤销。
 - 响应式：兼顾手机（375px 起）与桌面。

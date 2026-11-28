@@ -94,6 +94,8 @@ src/
 - `eslint .` 会扫到 Vite 预 bundling 缓存 `.vite/deps`（浏览器首次加载页面后生成），React 产物内的 eslint-disable 注释引用未安装的规则而报错；ESLint 全局 ignores 必须含 `.vite` 与 `dist`，`.gitignore`  likewise 含 `.vite`。
 - 上一会话遗留的 dev server 会占用 5173，新起的 server 自动换端口（如 5174）；浏览器若连旧端口，会拿到 HMR 混合新旧模块的页面，出现"点击不生效、组件用旧逻辑渲染"的假 bug。验证前先看 vite 输出的实际端口，必要时先关掉遗留进程。（2026-11-24 踩坑）
 - 浏览器面板隐藏时外层页面 innerWidth/clientWidth 为 0，列宽、溢出等布局测量全部失效；用同源 iframe 指定宽度（opacity:0 不影响布局）加载页面，测其 contentDocument 即可模拟任意断点。（2026-11-28 踩坑）
+- 浏览器面板隐藏时页面 setTimeout 被 Chrome 节流（隐藏初期约 1s、约 5 分钟后 intensive 节流到 1min），含 sleep 的验证脚本会集体超时；改用 MessageChannel 宏任务等待（不受节流）。dnd-kit TouchSensor 的 delay 定时器同样被节流，隐藏环境无法验证长按时序，留真机验收。（2026-11-28 踩坑）
+- dnd-kit DragOverlay 退场用 WAAPI `node.animate()`、卸载等 `onfinish`；隐藏页面不渲染、动画事件不派发，浮层残留是环境伪影，可见浏览器 250ms 后正常消失，不要误判为产品 bug。（2026-11-28 踩坑）
 - （踩坑后在此追加）
 
 ## 9. Git 与提交约定
