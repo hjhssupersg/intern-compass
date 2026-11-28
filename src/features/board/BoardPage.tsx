@@ -54,7 +54,11 @@ export function BoardPage({
     setActiveJob(null)
     const target = event.over?.data.current?.status as Status | undefined
     const job = jobs.find((item) => item.id === event.active.id)
-    if (target && job && job.status !== target) onStatusChange(job.id, target)
+    if (target && job && job.status !== target) {
+      onStatusChange(job.id, target)
+      // 手机单列视图跟随落列切换，否则卡片离开当前列后看似"消失"
+      setMobileStatus(target)
+    }
   }
 
   if (jobs.length === 0) {
@@ -103,7 +107,7 @@ export function BoardPage({
       <section>
         <p className="mb-2 text-sm text-slate-500">共 {jobs.length} 个岗位 · 拖动卡片到目标列改状态</p>
         <p className="mb-2 text-xs text-slate-400 md:hidden">长按卡片拖到下方状态标签即可改状态</p>
-        <div className="mb-3 flex flex-wrap gap-1.5 md:hidden">
+        <div className="mb-3 flex gap-1 overflow-x-auto md:hidden">
           {STATUS_ORDER.map((status) => (
             <StatusChip
               key={status}
