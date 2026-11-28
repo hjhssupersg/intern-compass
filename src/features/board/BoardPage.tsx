@@ -2,7 +2,7 @@ import { useState } from 'react'
 import {
   DndContext,
   DragOverlay,
-  PointerSensor,
+  MouseSensor,
   TouchSensor,
   pointerWithin,
   useSensor,
@@ -41,7 +41,8 @@ export function BoardPage({
   )
   const [activeJob, setActiveJob] = useState<Job | null>(null)
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    // MouseSensor 只响应鼠标；若用 PointerSensor 会与 TouchSensor 在触摸时双重激活
+    useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
     useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 8 } }),
   )
 
@@ -113,7 +114,7 @@ export function BoardPage({
             />
           ))}
         </div>
-        <div className="md:flex md:items-stretch md:gap-3 md:overflow-x-auto md:pb-3 xl:grid xl:grid-cols-6 xl:overflow-visible">
+        <div className="md:flex md:items-start md:gap-3 md:overflow-x-auto md:pb-3 xl:grid xl:grid-cols-6 xl:items-start xl:overflow-visible">
           {STATUS_ORDER.map((status) => (
             <div
               key={status}

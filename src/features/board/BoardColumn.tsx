@@ -19,7 +19,7 @@ export function BoardColumn({
     <section
       ref={setNodeRef}
       aria-label={STATUS_LABELS[status]}
-      className={`h-full rounded-2xl p-2.5 ${COLUMN_STYLES[status]} ${isOver ? DROP_OVER_STYLE : ''}`}
+      className={`rounded-2xl p-2.5 ${COLUMN_STYLES[status]} ${isOver ? DROP_OVER_STYLE : ''}`}
     >
       <header className="flex items-center justify-between px-1.5 pb-2 pt-1">
         <h2 className={`text-xs ${COLUMN_HEADER_STYLES[status]}`}>{STATUS_LABELS[status]}</h2>
