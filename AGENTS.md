@@ -97,7 +97,7 @@ src/
 - （踩坑后在此追加）
 
 ## 9. Git 与提交约定
-- 分支策略：`main` 保持可运行；每个任务从 `main` 拉 `feat/xxx` 分支，完成后合并。
+- 分支策略：`main` 保持可运行；每个任务从 `main` 拉 `feat/xxx` 分支；**合并回 main 前须由用户在浏览器确认效果满意，AI 自测通过不构成合并条件**（2026-11-28 确认）。
 - 提交信息格式：`<类型>(<范围>): <简述>`，类型取 feat / fix / refactor / docs / test / chore，例如 `feat(board): 支持卡片拖拽改状态`。
 - 一次提交只做一件事，不要把无关改动混在一起。
 - 不要提交：`node_modules/`、`dist/`、`.env*`（`.env.example` 除外）、IDE 配置（确认 `.gitignore` 已包含）。

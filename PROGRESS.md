@@ -1,8 +1,8 @@
 # PROGRESS.md
 
 ## 1. 当前状态
-- 当前里程碑：M2 看板进行中——M2-1 静态 6 列已完成（2026-11-28），下一步 M2-2 拖拽
-- 整体进度：约 45%，已上线公开访问（线上仍为 M1 版本，M2 尚未部署）
+- 当前里程碑：M2 看板进行中——M2-1 代码已完成但效果待用户确认；main 已回退到 877a2d1，改动保留在 feat/m2-board-static
+- 整体进度：约 40%，已上线公开访问（线上仍为 M1 版本）
 - 项目当前能否运行：能；公网链接 https://intern-compass-aqhthz2hyy7.qoder.zone（公开访问）
 - 最后更新：2026-11-28
 
@@ -15,21 +15,23 @@
 - [ ] M6 作品帖素材
 
 ## 3. 当前任务
-- 任务：M2-2 dnd-kit 拖拽改状态 + 持久化（方案待确认，尚未开工）
-- 涉及模块 / 文件：features/board（BoardPage / BoardColumn / JobCard 接入拖拽）、App.tsx（状态更新与持久化）；安装 dnd-kit core 6.3.1 / sortable 10.0.0 / utilities 3.2.2（用户已授权）
-- 完成标志：拖拽改状态刷新后仍在；手机可拖拽（TouchSensor 带 delay/距离阈值）；见 DESIGN §13 M2 行
-- 当前卡点：无
+- 任务：M2-1 效果修改（等用户具体反馈后在 feat/m2-board-static 上迭代）
+- 涉及模块 / 文件：features/board（BoardPage / BoardColumn / JobCard）、App.tsx；改动均在 feat/m2-board-static 分支
+- 完成标志：用户在浏览器确认效果满意后再合并回 main（AGENTS §9）；build / test / lint 全过
+- 当前卡点：等用户反馈 M2-1 效果的具体不满意之处
 
 ## 4. 下一步
-1. M2-2：dnd-kit 拖拽改状态 + 持久化（TouchSensor 配 delay/距离阈值）；M2 整体完成标志见 DESIGN §13
-2. M2 完成后：重新 build 并部署到 Qoder Sites，公网复验看板
-3. M3：JD 录入与解析——用户已决策采用大模型解析（2026-11-25）；实现路径（Function+自带 key vs Qoder Cloud Agents）待 M3 开工时先做小实验验证延迟/成本/套餐支持再定；保留关键词词典作降级
+1. M2-1：按用户反馈修改 → 用户确认效果 → 合并回 main
+2. M2-2：dnd-kit 拖拽改状态 + 持久化（TouchSensor 配 delay/距离阈值）；M2 整体完成标志见 DESIGN §13
+3. M2 完成后：重新 build 并部署到 Qoder Sites，公网复验看板
+4. M3：JD 录入与解析——用户已决策采用大模型解析（2026-11-25）；实现路径（Function+自带 key vs Qoder Cloud Agents）待 M3 开工时先做小实验验证延迟/成本/套餐支持再定；保留关键词词典作降级
 
 ## 5. 已完成记录
-- 2026-11-28 M2-1 静态 6 列看板（feat/m2-board-static）：
+- 2026-11-28 M2-1 静态 6 列看板（feat/m2-board-static，**效果待用户确认，未合并**）：
   - BoardPage 按 STATUS_ORDER 渲染 6 列；新增 BoardColumn（列头状态名+数量、低饱和底色静态类名表、空列占位）；JobCard 适配窄列（p-3、去掉状态徽章——列即状态、长文本 truncate+title 提示）；App 看板页近全宽，提示条与其他标签页保持 max-w-6xl
-  - 宽度策略（用户确认）：≥1280px grid 6 列并排（每列约 195–222px），<1280px flex 横向滑动 + 固定列宽 240px；DESIGN §15 已同步断点
+  - 宽度策略（用户确认）：≥1280px grid 6 列并排（每列约 195–222px），<1280px flex 横向滑动 + 固定列宽 240px；DESIGN §15 断点同步在分支提交中
   - build / 35 单测 / lint 全过；同源 iframe 实测 1440/1280/1024/375 四档宽度：布局模式、列数、无页面级溢出全部正确；清空→空状态→撤销恢复 6 卡、三标签切换、标红（≤3 天）/置灰（closed）正确；控制台无报错
+  - 流程教训：AI 自测通过后未等用户确认效果即合并 main，用户对效果不满意 → main 回退到 877a2d1（改动保留分支）；AGENTS §9 已写明合并前须用户确认效果
   - 踩坑：面板隐藏时外层 viewport 为 0 致布局测量失效 → 用指定宽度同源 iframe 测量（已入 AGENTS §8）；本地旧示例数据倒计时看似"错红"→ 实为 seed 日期已过数天，重置后逻辑正确
 - 2026-11-25 M1-4 首次部署到 Qoder Sites（feat/m1-deploy）：
   - 本地 build / test（35 单测）/ lint 全过后，`prepare_site`（webDirectory: dist，spa: true）→ `publish_site` 发布成功；站点名"实习罗盘"，slug intern-compass，实际域名 https://intern-compass-aqhthz2hyy7.qoder.zone；经用户授权设为公开访问
@@ -70,6 +72,7 @@
 - 2026-11-23：Qoder 内置浏览器面板隐藏时，截图报 NATIVE_BROWSER_VIEWPORT_UNAVAILABLE、坐标点击"成功"但不生效；take_snapshot 与 evaluate_script 脚本点击仍可用。功能验证改用脚本点击，视觉截图需先打开浏览器面板。（已同步 AGENTS.md 第 8 节）
 - 2026-11-23：跑过 dev 并打开页面后 `npm run lint` 报错：ESLint 9 扫到项目根 `.vite/deps` 预 bundling 缓存，React 产物内 eslint-disable 注释引用未安装的 react-internal 规则。全局 ignores 加 `**/.vite`，`.gitignore` 加 `.vite` 后恢复。（已同步 AGENTS.md 第 8 节）
 - 2026-11-24：上一会话遗留 dev server 占用 5173，新 server 换到 5174；浏览器连旧端口拿到 HMR 混合新旧模块的页面，表现为标签点击不生效、SkillsPage 收到新 props 却渲染旧逻辑。用 React fiber 读 memoizedProps 定位后换端口复测通过。（已同步 AGENTS.md 第 8 节）
+- 2026-11-28：M2-1 在 AI 自测通过但未获用户效果确认时合并 main，用户对效果不满意需回退。教训：合并条件是用户确认效果，不是 AI 自测（已写入 AGENTS §9）。
 
 ## 9. 重要变更记录
 - 2026-11-22：初始版本，三份文档按模板重写。
@@ -79,6 +82,7 @@
 - 2026-11-25：M1-4 部署上线（feat/m1-deploy）：站点公开发布，DESIGN §14 三个待确认项落结论；新增站点描述文件 `.实习罗盘.qoder.site`（工具生成）。
 - 2026-11-25：手机公网验证通过（用户实测），M1 勾选完成；用户决策 M3 采用大模型解析，实现路径待方案确认。
 - 2026-11-28：M2 拆分为 M2-1（静态 6 列看板）/ M2-2（dnd-kit 拖拽），dnd-kit 安装获用户授权；AGENTS §4 行数限制改为豁免测试文件（业务文件仍 ≤200 行），storage.test.ts（203 行）不再超标、无需拆分。
+- 2026-11-28：M2-1 过早合并被回退（main 回到 877a2d1，改动保留 feat/m2-board-static）；AGENTS §9 写明合并回 main 前须用户确认效果。
 
 ## 10. 下次会话的开场提示词
 ```
@@ -97,10 +101,10 @@
 - 效果 / 截图文件名：
 - 遇到的问题与怎么让 Qoder 解决的：
 ```
-### 2026-11-28 / M2-1（M2 进行中）
-- 给 Qoder 的关键 prompt："宽度策略按照你的建议来，开始执行"（此前按四段式确认方案，并决策 M2 拆两步、豁免测试文件行数限制）
-- 效果 / 截图文件名：6 列看板 + 倒计时四档宽度实测通过（视觉截图待补：面板隐藏，用 iframe 脚本验证）
-- 遇到的问题与怎么让 Qoder 解决的：① 面板隐藏致 viewport 0、布局数据失效 → 同源 iframe 指定宽度测量；② 旧示例数据倒计时"错红"疑云 → 核实为 seed 日期过期，重置数据后确认标红逻辑正确
+### 2026-11-28 / M2-1（M2 进行中，效果待确认）
+- 给 Qoder 的关键 prompt："宽度策略按照你的建议来，开始执行"；效果不满意后："我在AGENTS.md里面不是说过了验证完毕后再将分支提交合并进main吗，你现在怎么办"
+- 效果 / 截图文件名：6 列看板四档宽度实测通过（视觉截图待补：面板隐藏，用 iframe 脚本验证）
+- 遇到的问题与怎么让 Qoder 解决的：① 面板隐藏致 viewport 0、布局数据失效 → 同源 iframe 指定宽度测量；② 未获用户确认即合并 → 回退 main、改动保留分支、AGENTS §9 增加合并前置条件；③ 本地旧示例数据倒计时"错红"疑云 → 核实为 seed 日期过期，重置数据后确认标红逻辑正确
 ### 2026-11-25 / M1-4（M1 收尾）
 - 给 Qoder 的关键 prompt："按 1 完成什么 2 文件清单 3 思路与备选 4 验证与提交 四段给方案，确认后开工"；发布后站点默认私有，单独授权改为公开
 - 效果 / 截图文件名：公网链接上线、电脑端主流程与 localStorage 验证全过、手机验证通过（部署与验证截图待补）
