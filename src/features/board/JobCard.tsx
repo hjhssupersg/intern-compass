@@ -1,7 +1,14 @@
 import { daysUntil } from '../../lib/date'
-import type { Job } from '../../types'
+import type { InterviewStage, Job } from '../../types'
+import { INTERVIEW_STAGE_LABELS, INTERVIEW_STAGES } from '../../types'
 
-export function JobCard({ job }: { job: Job }) {
+export function JobCard({
+  job,
+  onStageChange,
+}: {
+  job: Job
+  onStageChange: (jobId: string, stage: InterviewStage) => void
+}) {
   const closed = job.status === 'closed'
   let deadlineText: string | null = null
   let urgent = false
@@ -33,6 +40,25 @@ export function JobCard({ job }: { job: Job }) {
           </span>
         ))}
       </div>
+      {job.status === 'interview' && (
+        <div className="mt-2.5 flex flex-wrap gap-1" role="group" aria-label="面试轮次">
+          {INTERVIEW_STAGES.map((stage) => (
+            <button
+              key={stage}
+              type="button"
+              aria-pressed={job.interviewStage === stage}
+              onClick={() => onStageChange(job.id, stage)}
+              className={`min-h-[40px] rounded-full px-2.5 text-xs font-medium transition ${
+                job.interviewStage === stage
+                  ? 'bg-violet-600 text-white'
+                  : 'bg-white text-violet-700 ring-1 ring-violet-200'
+              }`}
+            >
+              {INTERVIEW_STAGE_LABELS[stage]}
+            </button>
+          ))}
+        </div>
+      )}
       {deadlineText && (
         <p
           className={`mt-3 text-xs font-medium ${

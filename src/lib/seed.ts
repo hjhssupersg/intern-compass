@@ -50,6 +50,7 @@ export function createSampleJobs(today: string = todayLocal()): Job[] {
       rawJD:
         '【美团】数据开发实习生\n参与外卖履约数据仓库的建模与报表开发。\n要求：熟悉 Python 与 SQL，了解数据仓库分层与调度；有 Spark 使用经验加分。',
       status: 'interview',
+      interviewStage: 'second',
     },
     {
       company: '小红书',

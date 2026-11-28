@@ -1,5 +1,15 @@
 export type Status = 'todo' | 'applied' | 'written' | 'interview' | 'offer' | 'closed'
 
+export type InterviewStage = 'first' | 'second' | 'hr'
+
+export const INTERVIEW_STAGES: InterviewStage[] = ['first', 'second', 'hr']
+
+export const INTERVIEW_STAGE_LABELS: Record<InterviewStage, string> = {
+  first: '一面',
+  second: '二面',
+  hr: 'HR面',
+}
+
 export const STATUS_ORDER: Status[] = ['todo', 'applied', 'written', 'interview', 'offer', 'closed']
 
 export const STATUS_LABELS: Record<Status, string> = {
@@ -22,6 +32,7 @@ export interface Job {
   requirements: string
   rawJD: string
   status: Status
+  interviewStage?: InterviewStage
   note?: string
   createdAt: string
   isSample?: boolean

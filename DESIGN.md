@@ -88,6 +88,8 @@
 ```ts
 type Status = 'todo' | 'applied' | 'written' | 'interview' | 'offer' | 'closed';
 
+type InterviewStage = 'first' | 'second' | 'hr';
+
 interface Job {
   id: string;            // 随机 id
   company: string;
@@ -98,6 +100,7 @@ interface Job {
   requirements: string;  // 要求摘要
   rawJD: string;         // 原始 JD 文本
   status: Status;
+  interviewStage?: InterviewStage; // 面试轮次，仅 status 为 interview 时显示与生效
   note?: string;
   createdAt: string;     // ISO 时间
   isSample?: boolean;    // 是否为示例数据
@@ -186,6 +189,8 @@ function removeSamples(jobs: Job[], skills: SkillState): { jobs: Job[]; skills: 
 
 异常分支：拖拽到列外则回弹原位；存储失败时同上提示。
 
+**面试轮次细分**：面试列卡片提供［一面］［二面］［HR面］三个切换按钮，点击更新 `interviewStage` 并立即持久化；其他列不显示该组按钮，字段值保留（2026-11-28 确认）。
+
 **主链路 C：差距分析**
 1. 用户在"我的技能"勾选已掌握技术。
 2. 切换到"差距分析"，`computeGap` 统计结果并展示排行。
@@ -242,10 +247,10 @@ function removeSamples(jobs: Job[], skills: SkillState): { jobs: Job[]; skills: 
 
 ## 15. 视觉与交互规范
 - 风格：简洁、留白充足、信息密度适中，类似现代效率工具。
-- 色彩：一个主色（靛蓝）+ 中性灰；6 个状态列使用低饱和度的不同底色区分；临近截止（3 天内）用红色强调，已结束用灰色。
+- 色彩：一个主色（靛蓝）+ 中性灰；6 个状态列以不同色相底色区分，其中已投递/笔试/面试三列用高饱和底色 + 加粗同色列头 + 2px 描边醒目化（进行中的岗位是用户关注重点），其余列低饱和；临近截止（3 天内）用红色强调，已结束用灰色。
 - 字体：系统字体栈，中文可读性优先。
 - 组件：自行用 Tailwind 实现，不引入组件库。
-- 布局：顶部为标签栏和右上角固定的"＋ 粘贴 JD"主按钮；看板 ≥1280px 时 6 列并排（近全宽），<1280px 横向滑动（固定列宽 240px），手机端同为横向滑动（2026-11-28 确认断点）。
+- 布局：顶部为标签栏和右上角固定的"＋ 粘贴 JD"主按钮；看板 ≥1280px 时 6 列并排（近全宽），768–1279px 横向滑动（固定列宽 240px），<768px 为状态 chips 总览（带数量、换行排布）+ 单列全宽，无横滑（2026-11-28 确认断点与手机模式）。
 - 空状态：每个页面必须有引导文案（如看板为空提示"粘贴你的第一条 JD"）。
 - 反馈：所有操作有即时反馈；删除类操作提供撤销。
 - 响应式：兼顾手机（375px 起）与桌面。

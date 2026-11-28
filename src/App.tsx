@@ -7,7 +7,7 @@ import { SkillsPage } from './features/skills/SkillsPage'
 import { GapPage } from './features/gap/GapPage'
 import { ensureSeed, removeSamples } from './lib/seed'
 import { getLastLoadError, saveJobs, saveSkills } from './lib/storage'
-import type { Job, SkillState, StorageError } from './types'
+import type { InterviewStage, Job, SkillState, StorageError } from './types'
 
 function storageNotice(error: StorageError | null | undefined): string | null {
   if (error === 'corrupted') return '检测到本地数据损坏，已备份原数据并重置为空。'
@@ -47,6 +47,13 @@ export default function App() {
     snapshotRef.current = null
     persist(snapshot.jobs, snapshot.skills)
     setBanner('sample')
+  }
+
+  function handleStageChange(jobId: string, stage: InterviewStage) {
+    persist(
+      jobs.map((job) => (job.id === jobId ? { ...job, interviewStage: stage } : job)),
+      skills,
+    )
   }
 
   return (
@@ -91,7 +98,7 @@ export default function App() {
           {banner && <SampleBanner mode={banner} onClear={handleClear} onUndo={handleUndo} />}
         </div>
         <div key={tab} className={`animate-fade-up ${tab === 'board' ? '' : 'mx-auto max-w-6xl'}`}>
-          {tab === 'board' && <BoardPage jobs={jobs} />}
+          {tab === 'board' && <BoardPage jobs={jobs} onStageChange={handleStageChange} />}
           {tab === 'skills' && <SkillsPage skills={skills} />}
           {tab === 'gap' && <GapPage />}
         </div>
