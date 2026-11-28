@@ -7,7 +7,7 @@ import { SkillsPage } from './features/skills/SkillsPage'
 import { GapPage } from './features/gap/GapPage'
 import { ensureSeed, removeSamples } from './lib/seed'
 import { getLastLoadError, saveJobs, saveSkills } from './lib/storage'
-import type { Job, SkillState, StorageError } from './types'
+import type { InterviewStage, Job, SkillState, StorageError } from './types'
 
 function storageNotice(error: StorageError | null | undefined): string | null {
   if (error === 'corrupted') return '检测到本地数据损坏，已备份原数据并重置为空。'
@@ -49,6 +49,13 @@ export default function App() {
     setBanner('sample')
   }
 
+  function handleStageChange(jobId: string, stage: InterviewStage) {
+    persist(
+      jobs.map((job) => (job.id === jobId ? { ...job, interviewStage: stage } : job)),
+      skills,
+    )
+  }
+
   return (
     <div className="flex min-h-screen flex-col">
       <div
@@ -78,18 +85,20 @@ export default function App() {
         <TabBar active={tab} onChange={setTab} />
       </div>
 
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-6">
-        {notice && (
-          <div
-            role="alert"
-            className="mb-4 rounded-xl bg-red-50 px-4 py-2.5 text-sm text-red-700 ring-1 ring-red-100"
-          >
-            {notice}
-          </div>
-        )}
-        {banner && <SampleBanner mode={banner} onClear={handleClear} onUndo={handleUndo} />}
-        <div key={tab} className="animate-fade-up">
-          {tab === 'board' && <BoardPage jobs={jobs} />}
+      <main className="mx-auto w-full flex-1 px-4 py-6 sm:px-6">
+        <div className="mx-auto max-w-6xl">
+          {notice && (
+            <div
+              role="alert"
+              className="mb-4 rounded-xl bg-red-50 px-4 py-2.5 text-sm text-red-700 ring-1 ring-red-100"
+            >
+              {notice}
+            </div>
+          )}
+          {banner && <SampleBanner mode={banner} onClear={handleClear} onUndo={handleUndo} />}
+        </div>
+        <div key={tab} className={`animate-fade-up ${tab === 'board' ? '' : 'mx-auto max-w-6xl'}`}>
+          {tab === 'board' && <BoardPage jobs={jobs} onStageChange={handleStageChange} />}
           {tab === 'skills' && <SkillsPage skills={skills} />}
           {tab === 'gap' && <GapPage />}
         </div>

@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { EmptyState } from '../../components/EmptyState'
-import type { Job } from '../../types'
+import type { InterviewStage, Job, Status } from '../../types'
 import { STATUS_LABELS, STATUS_ORDER } from '../../types'
-import { JobCard } from './JobCard'
+import { BoardColumn } from './BoardColumn'
+import { CHIP_ACTIVE_STYLES, CHIP_IDLE_STYLES } from './columnStyles'
 
 function BoardIcon() {
   return (
@@ -13,51 +15,88 @@ function BoardIcon() {
   )
 }
 
-export function BoardPage({ jobs }: { jobs: Job[] }) {
-  if (jobs.length > 0) {
+export function BoardPage({
+  jobs,
+  onStageChange,
+}: {
+  jobs: Job[]
+  onStageChange: (jobId: string, stage: InterviewStage) => void
+}) {
+  const [mobileStatus, setMobileStatus] = useState<Status>(
+    () => STATUS_ORDER.find((status) => jobs.some((job) => job.status === status)) ?? 'todo',
+  )
+
+  if (jobs.length === 0) {
     return (
-      <section>
-        <p className="mb-4 text-sm text-slate-500">
-          共 {jobs.length} 个岗位 · 拖拽改状态的完整看板即将开放
-        </p>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {jobs.map((job) => (
-            <JobCard key={job.id} job={job} />
-          ))}
+      <EmptyState
+        icon={<BoardIcon />}
+        title="看板还是空的"
+        description="粘贴你的第一条 JD，解析确认后就会出现在这里。六个状态列之间可以自由拖拽，临近截止的岗位会标红提醒。"
+      >
+        <div className="mt-8 w-full rounded-2xl bg-white/70 p-4 shadow-card ring-1 ring-indigo-100/80">
+          <p className="text-xs font-medium text-slate-400">投递状态一览</p>
+          <div className="mt-3 flex flex-wrap items-center justify-center gap-x-1.5 gap-y-2">
+            {STATUS_ORDER.map((status, index) => (
+              <span key={status} className="flex items-center gap-1.5">
+                {index > 0 && (
+                  <span className="text-xs text-indigo-300" aria-hidden="true">
+                    →
+                  </span>
+                )}
+                <span
+                  className={`rounded-full px-2.5 py-1 text-xs font-medium ${
+                    status === 'closed'
+                      ? 'bg-slate-100 text-slate-500'
+                      : 'bg-indigo-50 text-indigo-600'
+                  }`}
+                >
+                  {STATUS_LABELS[status]}
+                </span>
+              </span>
+            ))}
+          </div>
+          <p className="mt-3 text-xs text-slate-400">实际投递不一定线性，任意两列之间都能拖动</p>
         </div>
-      </section>
+      </EmptyState>
     )
   }
+
   return (
-    <EmptyState
-      icon={<BoardIcon />}
-      title="看板还是空的"
-      description="粘贴你的第一条 JD，解析确认后就会出现在这里。六个状态列之间可以自由拖拽，临近截止的岗位会标红提醒。"
-    >
-      <div className="mt-8 w-full rounded-2xl bg-white/70 p-4 shadow-card ring-1 ring-indigo-100/80">
-        <p className="text-xs font-medium text-slate-400">投递状态一览</p>
-        <div className="mt-3 flex flex-wrap items-center justify-center gap-x-1.5 gap-y-2">
-          {STATUS_ORDER.map((status, index) => (
-            <span key={status} className="flex items-center gap-1.5">
-              {index > 0 && (
-                <span className="text-xs text-indigo-300" aria-hidden="true">
-                  →
-                </span>
-              )}
-              <span
-                className={`rounded-full px-2.5 py-1 text-xs font-medium ${
-                  status === 'closed'
-                    ? 'bg-slate-100 text-slate-500'
-                    : 'bg-indigo-50 text-indigo-600'
-                }`}
-              >
-                {STATUS_LABELS[status]}
-              </span>
-            </span>
-          ))}
-        </div>
-        <p className="mt-3 text-xs text-slate-400">实际投递不一定线性，任意两列之间都能拖动</p>
+    <section>
+      <p className="mb-4 text-sm text-slate-500">共 {jobs.length} 个岗位 · 拖拽改状态即将开放</p>
+      <div className="mb-3 flex flex-wrap gap-1.5 md:hidden">
+        {STATUS_ORDER.map((status) => {
+          const count = jobs.filter((job) => job.status === status).length
+          const active = mobileStatus === status
+          return (
+            <button
+              key={status}
+              type="button"
+              aria-pressed={active}
+              onClick={() => setMobileStatus(status)}
+              className={`min-h-[40px] rounded-full px-3 text-xs font-semibold transition ${
+                active ? CHIP_ACTIVE_STYLES[status] : CHIP_IDLE_STYLES[status]
+              }`}
+            >
+              {STATUS_LABELS[status]} {count}
+            </button>
+          )
+        })}
       </div>
-    </EmptyState>
+      <div className="md:flex md:items-stretch md:gap-3 md:overflow-x-auto md:pb-3 xl:grid xl:grid-cols-6 xl:overflow-visible">
+        {STATUS_ORDER.map((status) => (
+          <div
+            key={status}
+            className={`${mobileStatus === status ? '' : 'hidden'} md:block md:w-60 md:shrink-0 xl:w-auto`}
+          >
+            <BoardColumn
+              status={status}
+              jobs={jobs.filter((job) => job.status === status)}
+              onStageChange={onStageChange}
+            />
+          </div>
+        ))}
+      </div>
+    </section>
   )
 }
