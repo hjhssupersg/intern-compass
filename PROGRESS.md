@@ -15,10 +15,10 @@
 - [ ] M6 作品帖素材
 
 ## 3. 当前任务
-- 任务：M2-2 dnd-kit 拖拽改状态 + 持久化（方案待确认，尚未开工）
-- 涉及模块 / 文件：features/board（BoardPage / BoardColumn / JobCard 接入拖拽）、App.tsx（状态更新与持久化）；安装 dnd-kit core 6.3.1 / sortable 10.0.0 / utilities 3.2.2（用户已授权）
+- 任务：M2-2 dnd-kit 拖拽改状态 + 持久化（含修订：列高随内容、鼠标/触摸统一长按 200ms、chips 单行+间距留白、落列自动切换视图；AI 自测通过，**待用户复验收**，分支 feat/m2-board-dnd）
+- 涉及模块 / 文件：lib/board.ts + 单测、features/board（DraggableJobCard / StatusChip / BoardColumn / BoardPage）、App.tsx；已装 @dnd-kit/core 6.3.1 + utilities 3.2.2（方案 A：不装 sortable，DESIGN §4 已同步）
 - 完成标志：拖拽改状态刷新后仍在；手机可拖拽（TouchSensor 带 delay/距离阈值）；见 DESIGN §13 M2 行；用户验收后合并
-- 当前卡点：无
+- 当前卡点：等用户浏览器验收（含手机真机长按拖拽）
 
 ## 4. 下一步
 1. M2-2：dnd-kit 拖拽改状态 + 持久化（TouchSensor 配 delay/距离阈值）；M2 整体完成标志见 DESIGN §13
@@ -74,6 +74,13 @@
 - 2026-11-23：跑过 dev 并打开页面后 `npm run lint` 报错：ESLint 9 扫到项目根 `.vite/deps` 预 bundling 缓存，React 产物内 eslint-disable 注释引用未安装的 react-internal 规则。全局 ignores 加 `**/.vite`，`.gitignore` 加 `.vite` 后恢复。（已同步 AGENTS.md 第 8 节）
 - 2026-11-24：上一会话遗留 dev server 占用 5173，新 server 换到 5174；浏览器连旧端口拿到 HMR 混合新旧模块的页面，表现为标签点击不生效、SkillsPage 收到新 props 却渲染旧逻辑。用 React fiber 读 memoizedProps 定位后换端口复测通过。（已同步 AGENTS.md 第 8 节）
 - 2026-11-28：M2-1 在 AI 自测通过但未获用户效果确认时合并 main，用户对效果不满意需回退。教训：合并条件是用户确认效果，不是 AI 自测（已写入 AGENTS §9）。
+- 2026-11-28：隐藏面板下 setTimeout 被 Chrome 节流致含 sleep 的拖拽验证脚本超时；改 MessageChannel 宏任务等待后通过（已入 AGENTS §8）。
+- 2026-11-28：隐藏面板下 DragOverlay 退场动画（WAAPI）不派发 onfinish，浮层残留为环境伪影；可见浏览器正常（已入 AGENTS §8）。
+- 2026-11-28：M2-2 验收反馈两问题——列高被 stretch 拉伸同步、手机拖拽失效（PointerSensor+TouchSensor 双重激活）；改 items-start/去 h-full 与 MouseSensor+TouchSensor 修复（已入 AGENTS §8）。
+- 2026-11-28：脚本模拟 touch 须 dispatch 到卡片元素（TouchSensor 监听挂在触发元素）；initScript 只进顶层 frame，iframe 需 load 后注入节流 shim（已入 AGENTS §8）。
+- 2026-11-28：M2-2 复验收反馈——手机拖拽"时好时坏"实为 DevTools 设备模式（触摸逻辑+无光标）与响应式窄窗（鼠标逻辑）切换所致，另落列后视图不切换使卡片看似消失；chips 换行因 flex-wrap。修订：落列自动切换视图、chips 单行紧凑（已入 AGENTS §8）。
+- 2026-11-28：验证脚本固定 tick 轮数等待不足 200ms 误判长按未激活；同源 iframe 共享 localStorage 致跨轮状态污染。改按真实时间等待+每轮重置数据（已入 AGENTS §8）。
+- 2026-11-28：用户满意手机长按 0.2s 手感，要求电脑端统一（MouseSensor 改 delay 200/tolerance 8）；chips"紧贴"实为 ring-2 外描边吃掉 gap，按视觉净空重算间距（已入 AGENTS §8）。
 
 ## 9. 重要变更记录
 - 2026-11-22：初始版本，三份文档按模板重写。

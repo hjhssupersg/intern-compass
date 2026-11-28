@@ -1,5 +1,7 @@
 import type { Status } from '../../types'
 
+export const DROP_OVER_STYLE = 'outline outline-2 outline-offset-2 outline-indigo-500'
+
 export const COLUMN_STYLES: Record<Status, string> = {
   todo: 'bg-slate-50 ring-1 ring-slate-200/60',
   applied: 'bg-indigo-100/80 ring-2 ring-indigo-300',

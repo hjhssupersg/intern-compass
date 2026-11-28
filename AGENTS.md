@@ -94,6 +94,14 @@ src/
 - `eslint .` 会扫到 Vite 预 bundling 缓存 `.vite/deps`（浏览器首次加载页面后生成），React 产物内的 eslint-disable 注释引用未安装的规则而报错；ESLint 全局 ignores 必须含 `.vite` 与 `dist`，`.gitignore`  likewise 含 `.vite`。
 - 上一会话遗留的 dev server 会占用 5173，新起的 server 自动换端口（如 5174）；浏览器若连旧端口，会拿到 HMR 混合新旧模块的页面，出现"点击不生效、组件用旧逻辑渲染"的假 bug。验证前先看 vite 输出的实际端口，必要时先关掉遗留进程。（2026-11-24 踩坑）
 - 浏览器面板隐藏时外层页面 innerWidth/clientWidth 为 0，列宽、溢出等布局测量全部失效；用同源 iframe 指定宽度（opacity:0 不影响布局）加载页面，测其 contentDocument 即可模拟任意断点。（2026-11-28 踩坑）
+- 浏览器面板隐藏时页面 setTimeout 被 Chrome 节流（隐藏初期约 1s、约 5 分钟后 intensive 节流到 1min），含 sleep 的验证脚本会集体超时；改用 MessageChannel 宏任务等待（不受节流）。dnd-kit TouchSensor 的 delay 定时器同样被节流，隐藏环境无法验证长按时序，留真机验收。（2026-11-28 踩坑）
+- dnd-kit DragOverlay 退场用 WAAPI `node.animate()`、卸载等 `onfinish`；隐藏页面不渲染、动画事件不派发，浮层残留是环境伪影，可见浏览器 250ms 后正常消失，不要误判为产品 bug。（2026-11-28 踩坑）
+- PointerSensor 与 TouchSensor 同注册会在触摸时先后双重激活、拖拽失效；用 MouseSensor + TouchSensor 组合（MouseSensor 只响应 mousedown，TouchSensor 激活后 preventDefault 阻断兼容鼠标事件）。（2026-11-28 踩坑）
+- dnd-kit TouchSensor 把 touchmove/touchend 挂在触发元素上（非 document）；脚本模拟触摸必须 dispatch 到卡片元素，否则 onMove 不触发、看似"拖不动"；真机 touch 事件恒指向 touchstart 目标，不受影响。（2026-11-28 踩坑）
+- navigate_page 的 initScript 只作用顶层 frame；iframe 内解除定时器节流需在 load 后向 contentWindow 注入 shim（delay 定时器在 touchstart 时才创建，load 后注入来得及）。（2026-11-28 踩坑）
+- Chrome DevTools 设备模式（选手机型号）把鼠标事件转成触摸事件且不显示 CSS 光标：MouseSensor 不激活、无 grab 图标、必须长按 200ms 才能拖；响应式窄窗模式才是真鼠标逻辑（立即可拖、有 grab 图标）。验收时"拖拽时好时坏"多因两种模式切换，先确认模式再判 bug。（2026-11-28 踩坑）
+- 隐藏环境验证脚本等待必须按真实时间（Date.now 循环 + MessageChannel tick），固定 tick 轮数的实际耗时可能不足 200ms，长按定时器未触发就结束脚本会误判"拖拽失效"；同源 iframe 共享 localStorage，跨轮测试需要先重置 intern-compass 键再 reload，否则读到上一轮残留状态。（2026-11-28 踩坑）
+- Tailwind ring 画在 border-box 外、会吃掉 flex gap：两侧 ring-2 时视觉净空 = gap - 4px；调 chips 间距要按视觉净空算（gap-2.5 净空约 6px），只看 gap 数值会误判"紧贴"。（2026-11-28 踩坑）
 - （踩坑后在此追加）
 
 ## 9. Git 与提交约定
