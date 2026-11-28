@@ -15,7 +15,7 @@
 - [ ] M6 作品帖素材
 
 ## 3. 当前任务
-- 任务：M2-2 dnd-kit 拖拽改状态 + 持久化（代码完成、AI 自测通过，**待用户验收**，分支 feat/m2-board-dnd）
+- 任务：M2-2 dnd-kit 拖拽改状态 + 持久化（含修订：列高随内容、MouseSensor+TouchSensor；AI 自测通过，**待用户复验收**，分支 feat/m2-board-dnd）
 - 涉及模块 / 文件：lib/board.ts + 单测、features/board（DraggableJobCard / StatusChip / BoardColumn / BoardPage）、App.tsx；已装 @dnd-kit/core 6.3.1 + utilities 3.2.2（方案 A：不装 sortable，DESIGN §4 已同步）
 - 完成标志：拖拽改状态刷新后仍在；手机可拖拽（TouchSensor 带 delay/距离阈值）；见 DESIGN §13 M2 行；用户验收后合并
 - 当前卡点：等用户浏览器验收（含手机真机长按拖拽）
@@ -76,6 +76,8 @@
 - 2026-11-28：M2-1 在 AI 自测通过但未获用户效果确认时合并 main，用户对效果不满意需回退。教训：合并条件是用户确认效果，不是 AI 自测（已写入 AGENTS §9）。
 - 2026-11-28：隐藏面板下 setTimeout 被 Chrome 节流致含 sleep 的拖拽验证脚本超时；改 MessageChannel 宏任务等待后通过（已入 AGENTS §8）。
 - 2026-11-28：隐藏面板下 DragOverlay 退场动画（WAAPI）不派发 onfinish，浮层残留为环境伪影；可见浏览器正常（已入 AGENTS §8）。
+- 2026-11-28：M2-2 验收反馈两问题——列高被 stretch 拉伸同步、手机拖拽失效（PointerSensor+TouchSensor 双重激活）；改 items-start/去 h-full 与 MouseSensor+TouchSensor 修复（已入 AGENTS §8）。
+- 2026-11-28：脚本模拟 touch 须 dispatch 到卡片元素（TouchSensor 监听挂在触发元素）；initScript 只进顶层 frame，iframe 需 load 后注入节流 shim（已入 AGENTS §8）。
 
 ## 9. 重要变更记录
 - 2026-11-22：初始版本，三份文档按模板重写。

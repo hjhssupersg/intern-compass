@@ -189,7 +189,7 @@ function removeSamples(jobs: Job[], skills: SkillState): { jobs: Job[]; skills: 
 
 异常分支：拖拽到列外则回弹原位；存储失败时同上提示。
 
-拖拽实现（2026-11-28 确认）：core droppable 模型——列与手机 chips 为放置区（`data.status` 标识），卡片 `useDraggable`，`DragOverlay` 跟手浮层，`pointerWithin` 碰撞；PointerSensor 距离阈值 8px 防点击误拖，TouchSensor delay 200ms / tolerance 8px 长按触发且不与滚动冲突；离开面试列保留 `interviewStage`。键盘拖拽留待 M5 可访问性处理。
+拖拽实现（2026-11-28 确认）：core droppable 模型——列与手机 chips 为放置区（`data.status` 标识），卡片 `useDraggable`，`DragOverlay` 跟手浮层，`pointerWithin` 碰撞；MouseSensor 距离阈值 8px 防点击误拖（只响应鼠标，避免与 TouchSensor 触摸双重激活），TouchSensor delay 200ms / tolerance 8px 长按触发且不与滚动冲突；列高随内容（不拉伸对齐）；离开面试列保留 `interviewStage`。键盘拖拽留待 M5 可访问性处理。
 
 **面试轮次细分**：面试列卡片提供［一面］［二面］［HR面］三个切换按钮，点击更新 `interviewStage` 并立即持久化；其他列不显示该组按钮，字段值保留（2026-11-28 确认）。
 
