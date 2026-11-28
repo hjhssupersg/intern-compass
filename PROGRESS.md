@@ -1,31 +1,35 @@
 # PROGRESS.md
 
 ## 1. 当前状态
-- 当前里程碑：M2 看板进行中——M2-1 完成（2026-11-28 用户验收通过并合并 main）；下一步 M2-2 拖拽
-- 整体进度：约 45%，已上线公开访问（线上仍为 M1 版本，M2 尚未部署）
+- 当前里程碑：M2 完成（2026-11-28 M2-2 用户验收通过并合并 main）；下一步部署到 Qoder Sites 公网复验，然后 M3
+- 整体进度：约 55%，已上线公开访问（线上仍为 M1 版本，M2 尚未部署）
 - 项目当前能否运行：能；公网链接 https://intern-compass-aqhthz2hyy7.qoder.zone（公开访问）
 - 最后更新：2026-11-28
 
 ## 2. 里程碑清单
 - [x] M1 骨架与部署（2026-11-25 完成）
-- [ ] M2 看板
+- [x] M2 看板（2026-11-28 完成）
 - [ ] M3 JD 录入与解析
 - [ ] M4 技能与差距分析
 - [ ] M5 打磨
 - [ ] M6 作品帖素材
 
 ## 3. 当前任务
-- 任务：M2-2 dnd-kit 拖拽改状态 + 持久化（含修订：列高随内容、鼠标/触摸统一长按 200ms、chips 单行+间距留白、落列自动切换视图；AI 自测通过，**待用户复验收**，分支 feat/m2-board-dnd）
-- 涉及模块 / 文件：lib/board.ts + 单测、features/board（DraggableJobCard / StatusChip / BoardColumn / BoardPage）、App.tsx；已装 @dnd-kit/core 6.3.1 + utilities 3.2.2（方案 A：不装 sortable，DESIGN §4 已同步）
-- 完成标志：拖拽改状态刷新后仍在；手机可拖拽（TouchSensor 带 delay/距离阈值）；见 DESIGN §13 M2 行；用户验收后合并
-- 当前卡点：等用户浏览器验收（含手机真机长按拖拽）
+- 任务：M2 已完成，无进行中开发任务；下一步推送远端 + 重新部署到 Qoder Sites 并公网复验看板
+- 涉及模块 / 文件：部署相关（本地 build 产物 dist、Qoder Sites 站点 intern-compass）
+- 完成标志：公网看板拖拽/长按改状态、刷新持久化、3 天标红、手机单列与 chips 单行复验通过
+- 当前卡点：等用户确认推送与部署
 
 ## 4. 下一步
-1. M2-2：dnd-kit 拖拽改状态 + 持久化（TouchSensor 配 delay/距离阈值）；M2 整体完成标志见 DESIGN §13
-2. M2 完成后：重新 build 并部署到 Qoder Sites，公网复验看板
-3. M3：JD 录入与解析——用户已决策采用大模型解析（2026-11-25）；实现路径（Function+自带 key vs Qoder Cloud Agents）待 M3 开工时先做小实验验证延迟/成本/套餐支持再定；保留关键词词典作降级
+1. 推送 main 到远端；重新 build 并部署到 Qoder Sites，公网复验看板（桌面长按拖拽、手机长按拖到 chips、标红、持久化、chips 单行）
+2. M3：JD 录入与解析——用户已决策采用大模型解析（2026-11-25）；实现路径（Function+自带 key vs Qoder Cloud Agents）待 M3 开工时先做小实验验证延迟/成本/套餐支持再定；保留关键词词典作降级
 
 ## 5. 已完成记录
+- 2026-11-28 M2-2 拖拽改状态 + 持久化（feat/m2-board-dnd，**用户验收通过，已合并 main；M2 完成**）：
+  - 方案 A（用户确认）：core droppable 模型，不装 sortable——列与手机 chips 为放置区（data.status）、pointerWithin 碰撞、DragOverlay 跟手浮层；lib/board.ts moveJobStatus + 5 单测（全量 40）
+  - 修订链（用户反馈驱动）：① 列高随内容（items-start、去 h-full）；② PointerSensor+TouchSensor 触摸双重激活 → MouseSensor+TouchSensor；③ 落列后手机视图自动切到目标状态（卡片不再"消失"）；④ chips 单行 + 间距留白（ring-2 外描边吃 gap，按视觉净空 6px 重算）；⑤ 用户满意手机长按 0.2s，电脑端统一 MouseSensor delay 200 / tolerance 8
+  - 验收：2026-11-28 用户确认长按手感与间距满意后指示合并；AI 自测：40 单测 / lint / build、鼠标+触摸双路径（立即移动不拖、长按激活、落列持久化）、四档宽度、控制台无应用报错
+  - 踩坑：DevTools 设备模式与响应式窄窗输入逻辑不同致"时好时坏"；验证脚本须按真实时间等待、同源 iframe 共享 localStorage 需每轮重置；ring 外描边吃 gap（均已入 AGENTS §8）
 - 2026-11-28 M2-1 静态 6 列看板（feat/m2-board-static，**用户验收通过，已合并 main**）：
   - BoardPage 按 STATUS_ORDER 渲染 6 列；新增 BoardColumn（列头状态名+数量、低饱和底色静态类名表、空列占位）；JobCard 适配窄列（p-3、去掉状态徽章——列即状态、长文本 truncate+title 提示）；App 看板页近全宽，提示条与其他标签页保持 max-w-6xl
   - 宽度策略（用户确认）：≥1280px grid 6 列并排（每列约 195–222px），<1280px flex 横向滑动 + 固定列宽 240px；DESIGN §15 断点同步在分支提交中
@@ -92,6 +96,7 @@
 - 2026-11-28：M2 拆分为 M2-1（静态 6 列看板）/ M2-2（dnd-kit 拖拽），dnd-kit 安装获用户授权；AGENTS §4 行数限制改为豁免测试文件（业务文件仍 ≤200 行），storage.test.ts（203 行）不再超标、无需拆分。
 - 2026-11-28：M2-1 过早合并被回退（main 回到 877a2d1，改动保留 feat/m2-board-static）；AGENTS §9 写明合并回 main 前须用户确认效果。
 - 2026-11-28：M2-1 修订（醒目配色/面试轮次细分/手机单列总览/chips 醒目化）用户验收通过，合并回 main。
+- 2026-11-28：M2-2 用户验收通过合并回 main（5bb98de），M2 勾选完成；拖拽统一长按 200ms 触发（用户确认手感）。
 
 ## 10. 下次会话的开场提示词
 ```
@@ -110,6 +115,10 @@
 - 效果 / 截图文件名：
 - 遇到的问题与怎么让 Qoder 解决的：
 ```
+### 2026-11-28 / M2-2（M2 完成）
+- 给 Qoder 的关键 prompt："①选A，②认可"（方案 A 不装 sortable）；验收反馈"列高同步/手机拖拽无法实现"；"长按 0.2 秒设定满意，同步到电脑端；chips 间隔近、紧贴观感不好"；"合并"
+- 效果 / 截图文件名：拖拽改状态+刷新持久化、手机长按拖到 chips、落列自动切换视图、chips 单行（视觉截图待补：隐藏面板用 iframe 脚本验证）
+- 遇到的问题与怎么让 Qoder 解决的：① 手机拖拽失效 → 读 dnd-kit 源码定位 PointerSensor+TouchSensor 双重激活，换 MouseSensor+TouchSensor；② 列高被拉伸同步 → items-start + 去 h-full；③ "拖拽时好时坏" → 查明 DevTools 设备模式/响应式模式输入差异，并修落列后视图不切换的真缺陷；④ chips"紧贴" → ring-2 外描边吃掉 gap，按视觉净空重算间距
 ### 2026-11-28 / M2-1（M2 进行中，M2-1 已验收）
 - 给 Qoder 的关键 prompt："宽度策略按照你的建议来，开始执行"；三点反馈"进行中三列醒目/面试细分一面二面HR面/手机滑动过多"；"手机端还需要将三个状态栏再醒目一些"；验收"好了，改进工作完成，提交吧"
 - 效果 / 截图文件名：6 列看板四档宽度实测通过（视觉截图待补：面板隐藏，用 iframe 脚本验证）
