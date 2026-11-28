@@ -15,14 +15,15 @@
 - [ ] M6 作品帖素材
 
 ## 3. 当前任务
-- 任务：无进行中任务；待确认 M2 看板方案后开工
-- 涉及模块 / 文件：M2 涉及 features/board、dnd-kit 安装（版本按 DESIGN §4 锁定）
-- 完成标志：见 DESIGN §13 M2 行
+- 任务：M2-1 静态 6 列看板与截止倒计时（方案待确认，尚未开工）
+- 涉及模块 / 文件：features/board（BoardPage 改 6 列布局、新增列组件、JobCard 适配窄列）、lib/date（复用）；本步不引入新依赖
+- 完成标志：桌面 6 列、手机横向滑动；≤3 天/过期标红、closed 灰；build / test / lint 全过，浏览器桌面 + 375px 实测无报错
 - 当前卡点：无
 
 ## 4. 下一步
-1. M2：看板（6 列拖拽、截止倒计时、持久化；dnd-kit core ≥6.3 / sortable 10.x / utilities 3.x）
-2. M3：JD 录入与解析——用户已决策采用大模型解析（2026-11-25）；实现路径（Function+自带 key vs Qoder Cloud Agents）待 M3 开工时先做小实验验证延迟/成本/套餐支持再定；保留关键词词典作降级
+1. M2-1：静态 6 列布局 + 截止倒计时（不含拖拽；倒计时与标红逻辑 JobCard 已有，复用）
+2. M2-2：dnd-kit 拖拽改状态 + 持久化（用户 2026-11-28 已授权安装 core 6.3.1 / sortable 10.0.0 / utilities 3.2.2；TouchSensor 配 delay/距离阈值）；M2 整体完成标志见 DESIGN §13
+3. M3：JD 录入与解析——用户已决策采用大模型解析（2026-11-25）；实现路径（Function+自带 key vs Qoder Cloud Agents）待 M3 开工时先做小实验验证延迟/成本/套餐支持再定；保留关键词词典作降级
 
 ## 5. 已完成记录
 - 2026-11-25 M1-4 首次部署到 Qoder Sites（feat/m1-deploy）：
