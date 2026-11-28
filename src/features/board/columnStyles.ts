@@ -36,4 +36,11 @@ export const CHIP_ACTIVE_STYLES: Record<Status, string> = {
   closed: 'bg-stone-500 text-white',
 }
 
-export const CHIP_IDLE_STYLE = 'bg-white text-slate-600 ring-1 ring-slate-200'
+export const CHIP_IDLE_STYLES: Record<Status, string> = {
+  todo: 'bg-white text-slate-600 ring-1 ring-slate-200',
+  applied: 'bg-indigo-100 text-indigo-700 ring-2 ring-indigo-300',
+  written: 'bg-sky-100 text-sky-700 ring-2 ring-sky-300',
+  interview: 'bg-violet-100 text-violet-700 ring-2 ring-violet-300',
+  offer: 'bg-white text-slate-600 ring-1 ring-slate-200',
+  closed: 'bg-white text-slate-600 ring-1 ring-slate-200',
+}

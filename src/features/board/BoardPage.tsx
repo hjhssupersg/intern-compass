@@ -3,7 +3,7 @@ import { EmptyState } from '../../components/EmptyState'
 import type { InterviewStage, Job, Status } from '../../types'
 import { STATUS_LABELS, STATUS_ORDER } from '../../types'
 import { BoardColumn } from './BoardColumn'
-import { CHIP_ACTIVE_STYLES, CHIP_IDLE_STYLE } from './columnStyles'
+import { CHIP_ACTIVE_STYLES, CHIP_IDLE_STYLES } from './columnStyles'
 
 function BoardIcon() {
   return (
@@ -75,7 +75,7 @@ export function BoardPage({
               aria-pressed={active}
               onClick={() => setMobileStatus(status)}
               className={`min-h-[40px] rounded-full px-3 text-xs font-semibold transition ${
-                active ? CHIP_ACTIVE_STYLES[status] : CHIP_IDLE_STYLE
+                active ? CHIP_ACTIVE_STYLES[status] : CHIP_IDLE_STYLES[status]
               }`}
             >
               {STATUS_LABELS[status]} {count}
